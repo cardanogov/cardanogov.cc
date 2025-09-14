@@ -17,6 +17,9 @@ appsettings.Production.json
 appsettings.Staging.json
 secrets.json
 *.secrets.json
+SENSITIVE_INFORMATION.txt
+*SENSITIVE*.txt
+*SECRET*.txt
 
 # ===========================================
 # C# / .NET Core / .NET 8

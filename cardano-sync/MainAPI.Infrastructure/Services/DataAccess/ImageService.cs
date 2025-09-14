@@ -98,8 +98,6 @@ namespace MainAPI.Infrastructure.Services.DataAccess
                     genius_preference = "graphic"
                 };
 
-                return "/assets/icons/cardano.png";
-
                 var jsonContent = JsonSerializer.Serialize(requestBody);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
