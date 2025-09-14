@@ -58,6 +58,7 @@ namespace SharedLibrary.DTOs
         public double? deposit { get; set; }
         public string? startTime { get; set; }
         public string? endTime { get; set; }
+        public long? block_time { get; set; }
 
 
         // Additional properties for detailed voting information

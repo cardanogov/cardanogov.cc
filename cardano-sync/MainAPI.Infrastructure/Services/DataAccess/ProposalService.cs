@@ -26,6 +26,17 @@ namespace MainAPI.Infrastructure.Services.DataAccess
             { "cc_hot1qdc65ke6jfq2q25fcn3g89tea30tvrzpptc2tw6g8cdc7pqtmus0y", "Ace Alliance" }
         };
 
+        private readonly Dictionary<string, string> _ccOldMapName = new()
+        {
+            { "cc_hot1qvr7p6ms588athsgfd0uez5m9rlhwu3g9dt7wcxkjtr4hhsq6ytv2", "Cardano Atlantic Council" },
+            { "cc_hot1qvh20fuwhy2dnz9e6d5wmzysduaunlz5y9n8m6n2xen3pmqqvyw8v", "Eastern Cardano Council" },
+            { "cc_hot1qdnedkra2957t6xzzwygdgyefd5ctpe4asywauqhtzlu9qqkttvd9", "Cardano Foundation" },
+            { "cc_hot1qwzuglw5hx3wwr5gjewerhtfhcvz64s9kgam2fgtrj2t7eqs00fzv", "Intersect" },
+            { "cc_hot1qdqp9j44qfnwlkx9h78kts8hvee4ycc7czrw0xl4lqhsw4gcxgkpt", "Cardano Japan" },
+            { "cc_hot1q0wzkpcxzzfs4mf4yk6yx7d075vqtyx2tnxsr256he6gnwq6yfy5w", "EMURGO" },
+            { "cc_hot1qv7fa08xua5s7qscy9zct3asaa5a3hvtdc8sxexetcv3unq7cfkq5", "Input Output Global" }
+        };
+
         public ProposalService(IDbContextFactory<ApplicationDbContext> contextFactory, ILogger<ProposalService> logger, IImageService imageService)
         {
             _contextFactory = contextFactory;
@@ -673,6 +684,7 @@ namespace MainAPI.Infrastructure.Services.DataAccess
                 endTime = timeData.endTime,
                 supportLink = JsonUtils.ParseJsonBReferences(proposal.meta_json),
                 param_proposal = JsonUtils.FormatJsonBField(proposal.param_proposal).ToLower(),
+                block_time = proposal.block_time
             };
 
             return result;
@@ -690,7 +702,6 @@ namespace MainAPI.Infrastructure.Services.DataAccess
                 // Fetch image URL using the image service
                 _logger.LogInformation("Fetching image for proposal: {Title}", proposal.title);
                 proposal.imageUrl = await _imageService.GetImageAsync(proposal.title ?? "", proposal.abstract_ ?? "");
-
                 // Fetch voting summary from database
                 var votingSummary = await context.proposal_voting_summary
                     .AsNoTracking()
@@ -853,7 +864,15 @@ namespace MainAPI.Infrastructure.Services.DataAccess
                 }
                 else if (vote.voter_role == "ConstitutionalCommittee")
                 {
-                    dto.name = _ccMapName.GetValueOrDefault(vote.voter_id, "N/A");
+                    if (vote.block_time < 1756684800)
+                    {
+                        dto.name = _ccOldMapName.GetValueOrDefault(vote.voter_id, "N/A");
+                    }
+                    else
+                    {
+                        dto.name = _ccMapName.GetValueOrDefault(vote.voter_id, "N/A");
+                    }
+
                     dto.voting_power = 1;
                 }
 

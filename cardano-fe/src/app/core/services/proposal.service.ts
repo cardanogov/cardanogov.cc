@@ -89,6 +89,7 @@ export interface ProposalInfoResponse {
   poolAbstainActive?: number;
   committeeYesPct?: number;
   param_proposal?: string;
+  block_time?:number;
 }
 
 export interface GovernanceActionResponse {

@@ -167,6 +167,67 @@ export class ActivityDetailsComponent implements OnInit {
     },
   ];
 
+  protected ccOldInfo = [
+    {
+      key: 'Intersect',
+      value: 'cc_hot1qwzuglw5hx3wwr5gjewerhtfhcvz64s9kgam2fgtrj2t7eqs00fzv',
+      cc_cold:'',
+      vote: '',
+      color: '',
+      imageUrl: 'assets/icons/cc/intersect.png',
+    },
+    {
+      key: 'Input Output Global',
+      value: 'cc_hot1qv7fa08xua5s7qscy9zct3asaa5a3hvtdc8sxexetcv3unq7cfkq5',
+      cc_cold:'',
+      vote: '',
+      color: '',
+      imageUrl: 'assets/icons/cc/iog.png',
+    },
+    {
+      key: 'Cardano Foundation',
+      value: 'cc_hot1qdnedkra2957t6xzzwygdgyefd5ctpe4asywauqhtzlu9qqkttvd9',
+      cc_cold:'',
+      vote: '',
+      color: '',
+      imageUrl: 'assets/icons/cc/foundation.png',
+    },
+    {
+      key: 'Emurgo',
+      value: 'cc_hot1q0wzkpcxzzfs4mf4yk6yx7d075vqtyx2tnxsr256he6gnwq6yfy5w',
+      cc_cold:'',
+      vote: '',
+      color: '',
+      imageUrl: 'assets/icons/cc/emurgo.png',
+    },
+    {
+      key: 'Cardano Japan Council',
+      value: 'cc_hot1qdqp9j44qfnwlkx9h78kts8hvee4ycc7czrw0xl4lqhsw4gcxgkpt',
+      cc_cold:'',
+      vote: '',
+      color: '',
+      imageUrl: 'assets/icons/cc/japan-council.png',
+    },
+    {
+      key: 'Eastern Cardano Council',
+      value: 'cc_hot1qvh20fuwhy2dnz9e6d5wmzysduaunlz5y9n8m6n2xen3pmqqvyw8v',
+      cc_cold:'',
+      vote: '',
+      color: '',
+      imageUrl: 'assets/icons/cc/eastern-council.png',
+    },
+    {
+      key: 'Cardano Atlantic Council',
+      value: 'cc_hot1qvr7p6ms588athsgfd0uez5m9rlhwu3g9dt7wcxkjtr4hhsq6ytv2',
+      cc_cold:'',
+      vote: '',
+      color: '',
+      imageUrl: 'assets/icons/cc/atlantic-council.png',
+    },
+  ];
+
+  protected currentCommitteeData: any[] = this.ccInfo; // Default to new CC info
+
   protected readonly tableColumns: TableColumn[] = [
     { key: 'block_time', title: 'Date' },
     { key: 'name', title: 'Representative' },
@@ -372,8 +433,11 @@ export class ActivityDetailsComponent implements OnInit {
         },
       });
 
-    // Load committee votes
-    this.ccInfo.forEach((item) => {
+      console.log(this.proposalDetails.block_time);
+    // Load committee votes - use ccOldInfo if block_time < 1756684800, otherwise use ccInfo
+    this.currentCommitteeData = (this.proposalDetails.block_time && this.proposalDetails.block_time < 1756684800) ? this.ccOldInfo : this.ccInfo;
+    console.log(this.currentCommitteeData);
+    this.currentCommitteeData.forEach((item) => {
       if (item.value && item.value != '') {
         this.committeeService.getCommitteeVotes(item.value).subscribe({
           next: (response) => {
