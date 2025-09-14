@@ -1,0 +1,99 @@
+<div class="committee-card">
+  <div class="logo-container">
+    <img [src]="logo" [alt]="title" />
+  </div>
+  <div class="card-content">
+    <div class="header">
+      <div class="title mb-2">{{ title }}</div>
+
+      <!-- CC Cold Address -->
+      <div class="address-container" *ngIf="ccCold">
+        <div class="address-label">CC Cold:</div>
+        <div class="address">{{ truncateMiddle(ccCold) }}</div>
+        <nb-icon icon='copy-outline' pack='eva' (click)="copyToClipboard(ccCold)"></nb-icon>
+      </div>
+
+      <!-- CC Hot Address -->
+      <div class="address-container" *ngIf="ccHot">
+        <div class="address-label">CC Hot:</div>
+        <div class="address">{{ truncateMiddle(ccHot) }}</div>
+        <nb-icon icon='copy-outline' pack='eva' (click)="copyToClipboard(ccHot)"></nb-icon>
+      </div>
+
+      <!-- Fallback to old address if neither cc_cold nor cc_hot exist -->
+      <div class="address-container" *ngIf="!ccCold && !ccHot && address">
+        <div class="address">{{ truncateMiddle(address) }}</div>
+        <nb-icon icon='copy-outline' pack='eva' (click)="copyToClipboard(address)"></nb-icon>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat-item">
+        <div class="icon-container">
+          <img src="assets/icons/cc/group-icon.svg" alt="Members" />
+        </div>
+        <div class="value-container" *ngIf="members">
+          <div class="value">{{ members }}</div>
+          <div class="label">
+            Members
+            <nb-icon icon="info-outline" pack="eva" [nbTooltip]="membersLink || 'No link available'" (click)="navigateToMembers()"></nb-icon>
+          </div>
+        </div>
+
+        <div class="value-container" *ngIf="company">
+          <div class="value">{{ company }}</div>
+          <div class="label">
+            Organization
+            <nb-icon icon="info-outline" pack="eva" [nbTooltip]="membersLink || 'No link available'" (click)="navigateToMembers()"></nb-icon>
+          </div>
+        </div>
+
+        <div class="value-container" *ngIf="!members && !company">
+          <div class="value">{{ organization }}</div>
+          <div class="label">
+            Organization
+            <nb-icon icon="info-outline" pack="eva" [nbTooltip]="membersLink || 'No link available'" (click)="navigateToMembers()"></nb-icon>
+          </div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="icon-container">
+          <img src="assets/icons/cc/vote-icon.svg" alt="Times voted" />
+        </div>
+        <div class="value-container">
+          <div class="value">{{ timesVoted }}</div>
+          <div class="label">
+            Times voted
+            <nb-icon icon="info-outline" pack="eva" (click)="openVotingHistory()"></nb-icon>
+          </div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="icon-container">
+          <img src="assets/icons/cc/arm-icon.svg" alt="Voting power" />
+        </div>
+        <div class="value-container">
+          <div class="value">{{ votingPower }}</div>
+          <div class="label">Voting power</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="icon-container">
+          <img src="assets/icons/cc/target-icon.svg" alt="Trust" />
+        </div>
+        <div class="value-container">
+          <div class="value">{{ status }}</div>
+          <div class="label">Status</div>
+        </div>
+      </div>
+    </div>
+    <div class="tenure">
+      <div class="tenure-header">
+        <div class="label">Tenure</div>
+        <div class="end-date">{{ calculateTenure() }}</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+    </div>
+  </div>
+</div>

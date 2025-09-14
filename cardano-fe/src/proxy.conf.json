@@ -1,0 +1,10 @@
+{
+  "/koios-api": {
+    "target": "https://api.koios.rest",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/koios-api": ""
+    }
+  }
+}

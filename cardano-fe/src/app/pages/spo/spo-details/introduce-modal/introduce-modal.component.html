@@ -1,0 +1,84 @@
+<div class="container-fluid p-4">
+	<div class="d-flex justify-content-end">
+		<button class="close-btn" (click)="close()">
+			<nb-icon icon="close"></nb-icon>
+		</button>
+	</div>
+	<h2 class="text-center">{{ data.title }}</h2>
+  <nb-card>
+    <nb-card-header>
+      <div class="header-container">
+        <div
+          class="header-main d-flex justify-content-between align-items-center"
+        >
+          <div class="d-flex align-items-center">
+            <img
+              src="assets/icons/logo.png"
+              alt="Cardano Logo"
+              class="logo"
+            />
+            <span>Introduce</span>
+          </div>
+        </div>
+      </div>
+    </nb-card-header>
+
+    <nb-card-body>
+      <div class="table-responsive">
+        <table nbTable class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>{{ data.data.information.name }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ticker</td>
+              <td>{{ data.data.information.ticker }}</td>
+            </tr>
+            <tr>
+              <td>Live Stake</td>
+              <td>{{ formatValue(data.data.information.live_stake) }}₳</td>
+            </tr>
+            <tr>
+              <td>Declared Pledge</td>
+              <td>{{ formatValue(data.data.information.deposit) }}₳</td>
+            </tr>
+            <tr>
+              <td>Margin fee</td>
+              <td>{{ data.data.information.margin * 100 }}%</td>
+            </tr>
+            <tr>
+              <td>Fixed fee</td>
+              <td>{{ formatValue(data.data.information.fixed_cost) }}₳</td>
+            </tr>
+            <tr>
+              <td>Created</td>
+              <td>
+                {{
+                  (data.data.status.registration > 0
+                    ? data.data.status.registration * 1000
+                    : null
+                  ) | date : "dd/MM/yyyy" : "UTC"
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td>Delegators</td>
+              <td>{{ data.data.information.delegators }}</td>
+            </tr>
+            <tr>
+              <td>Blocks Lifetime</td>
+              <td>{{ data.data.information.block_count }}</td>
+            </tr>
+            <tr>
+              <td>Description</td>
+              <td>{{ data.data.information.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </nb-card-body>
+  </nb-card>
+</div>

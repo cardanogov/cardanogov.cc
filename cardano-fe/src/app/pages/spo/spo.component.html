@@ -1,0 +1,464 @@
+<div class="container-fluid py-2">
+  <!-- CARD SECTION -->
+  <ng-container *ngIf="!isLoading; else loadingCards">
+    <div class="card-container">
+      <!-- TOTAL STAKED -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <p class="title">Total Staked</p>
+          <span class="d-flex">
+            <p class="value">₳ {{ activeStake }}</p>
+            <div class="change-badge ml-1 mt-2">
+              <span
+                [ngClass]="{
+                  positive: activeStakeChange > 0,
+                  negative: activeStakeChange < 0
+                }"
+              >
+                {{ activeStakeChange > 0 ? "+" : ""
+                }}{{ activeStakeChange | number : "1.2-2" }}%
+              </span>
+              Since last epoch
+            </div>
+          </span>
+          <div class="progress mt-2 mb-1" style="height: 15px">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="totalSupplyPercent"
+              [attr.aria-valuenow]="totalSupplyPercent"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              style="background-color: #00b2f8"
+            >
+              {{ totalSupplyPercent }}%
+            </div>
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="100 - totalSupplyPercent"
+              [attr.aria-valuenow]="100 - totalSupplyPercent"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              style="background-color: #808080"
+            >
+              {{ 100 - totalSupplyPercent }}%
+            </div>
+          </div>
+          <p class="detail">
+            Total ADA Staked/ Circulating supply: {{ this.totalSupplyPercent }}%
+          </p>
+        </div>
+        <div class="icon-container">
+          <img
+            src="../../../assets/icons/coin-stacked.svg"
+            alt="Delegation Icon"
+            style="
+              filter: invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg)
+                brightness(93%) contrast(90%);
+            "
+          />
+        </div>
+      </div>
+
+      <!-- ACTIVE POOLS -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <p class="title">Active Pools</p>
+          <p class="value">
+            {{ membershipData.total_pool?.toLocaleString("de-DE") || 0 }}
+          </p>
+        </div>
+        <div class="icon-container">
+          <img
+            src="../../../assets/icons/share-dots.svg"
+            alt="Delegation Icon"
+            style="
+              filter: invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg)
+                brightness(93%) contrast(90%);
+            "
+          />
+        </div>
+      </div>
+
+      <!-- TOTAL STAKED ADDRESSES -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <p class="title">Total Staked Addresses</p>
+          <p class="value">
+            {{
+              membershipData.total_stake_addresses?.toLocaleString("de-DE") || 0
+            }}
+          </p>
+        </div>
+        <div class="icon-container">
+          <nb-icon icon="people-outline" pack="eva"></nb-icon>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #loadingCards>
+    <div class="card-container">
+      <app-card-skeleton
+        height="125px"
+        *ngFor="let i of [1, 2, 3]"
+      ></app-card-skeleton>
+    </div>
+  </ng-template>
+
+  <!-- Charts Section -->
+  <div class="charts-grid">
+    <ng-container *ngIf="isLoading; else chartsContent">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+        <app-chart-skeleton *ngFor="let i of [1, 2]"></app-chart-skeleton>
+      </div>
+    </ng-container>
+
+    <ng-template #chartsContent>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <!-- SPO Voting Power -->
+        <app-chart
+          title="SPO Voting Power"
+          [showGroup]="isGroupSpo"
+          (group)="groupSpoVotingPower()"
+          (expand)="openModal('spoVoting', 'SPO Voting Power')"
+        >
+          <canvas #spoVotingChart></canvas>
+        </app-chart>
+
+        <!-- Staked statistics -->
+
+        <app-chart
+          title="Staked statistics"
+          (expand)="openModal('stakedStatistics', 'Staked statistics')"
+        >
+          <canvas #stakedStatisticsChart></canvas>
+        </app-chart>
+
+        <!-- SPO statistics -->
+        <app-chart
+          title="SPO statistics"
+          (expand)="openModal('spoStatistics', 'SPO statistics')"
+        >
+          <canvas #spoStatisticsChart></canvas>
+        </app-chart>
+
+        <!-- Stake addresses statistics -->
+        <app-chart
+          title="Stake addresses statistics"
+          (expand)="
+            openModal('stakeAddressesStatistics', 'Stake addresses statistics')
+          "
+        >
+          <canvas #stakeAddressesStatisticsChart></canvas>
+        </app-chart>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-section">
+    <div class="table-header">
+      <div
+        class="d-flex flex-wrap justify-content-between align-items-center gap-4"
+      >
+        <!-- logo -->
+        <div class="logo-container d-flex align-items-center">
+          <img src="assets/images/Logo - remove background-2.png" alt="Icon" />
+          <h2 class="title ml-2">SPO List</h2>
+        </div>
+
+        <!-- action -->
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex gap-2 mb-sm-0">
+            <button
+              class="filter-button"
+              [class.active]="currentStatus === 'active'"
+              (click)="onStatusChange('active')"
+            >
+              Active
+            </button>
+            <button
+              class="filter-button"
+              [class.active]="currentStatus === 'inactive'"
+              (click)="onStatusChange('inactive')"
+            >
+              Inactive
+            </button>
+          </div>
+          <input
+            type="search"
+            class="search-input"
+            placeholder="Search SPO"
+            (keydown.enter)="onSearch($any($event.target).value)"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="spo-grid">
+      <ng-container *ngIf="!isLoadingList; else loadingPools">
+        <ng-container *ngIf="pools.length > 0; else noPools">
+          <div class="spo-card" *ngFor="let pool of pools">
+            <!-- Card Header -->
+            <div class="d-flex justify-content-between align-items-start mb-4">
+              <div class="d-flex gap-3">
+                <div class="avatar">
+                  <img
+                    src="assets/icons/account-icon.svg"
+                    [alt]="pool.ticker"
+                    class="img-fluid"
+                  />
+                </div>
+                <div>
+                  <h3 class="fs-6 m-0 text-truncate" style="max-width: 150px">
+                    {{ pool.ticker || "N/A" }}
+                  </h3>
+                  <div class="d-flex align-items-center gap-2 text-muted">
+                    <span
+                      #textToCopy
+                      class="text-truncate"
+                      style="max-width: 120px"
+                      [attr.data-text-copy]="pool.pool_id_bech32 || ''"
+                    >
+                      {{ truncateMiddle(pool.pool_id_bech32 || "") }}
+                    </span>
+                    <nb-icon
+                      class="cursor-pointer hover:text-white"
+                      icon="copy-outline"
+                      pack="eva"
+                      (click)="copyToClipboard(textToCopy)"
+                    ></nb-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Stats -->
+            <div class="stats-grid mb-4">
+              <div class="stat-item">
+                <div class="label">Times Voted</div>
+                <div class="value mt-1 text-sm">{{ pool.vote }}</div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Delegators</div>
+                <div class="value mt-1 text-sm">
+                  {{ pool.delegator || 0 | number : "1.0-0" }}
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Voting power</div>
+                <div class="value mt-1 text-sm">
+                  ₳ {{ formatValueHtml(pool.voting_amount || 0) }}
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Status</div>
+                <div class="d-flex align-items-center gap-2">
+                  <div
+                    class="status-indicator"
+                    [class.active]="pool.status === 'Active'"
+                    [class.inactive]="pool.status === 'Inactive'"
+                  ></div>
+                  <span class="text-muted small">{{ pool.status }}</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Last Activity</div>
+                <div class="value mt-1 text-sm">
+                  {{
+                    pool.block_time && pool.block_time > 0
+                      ? (pool.block_time * 1000 | date : "dd/MM/yyyy" : "UTC")
+                      : "N/A"
+                  }}
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Contact</div>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <a
+                      *ngIf="pool.homepage && pool.homepage !== ''"
+                      [href]="pool.homepage"
+                      target="_blank"
+                      class="reference-link"
+                    >
+                      <nb-icon icon="globe-outline" pack="eva"></nb-icon>
+                    </a>
+                    <!-- <div *ngFor="let ref of pool.ref?.slice(0, 3)">
+                      <ng-container [ngSwitch]="getReferenceType(ref)">
+                        <a
+                          *ngSwitchCase="'Twitter'"
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <nb-icon icon="twitter" pack="eva"></nb-icon>
+                        </a>
+                        <a
+                          *ngSwitchCase="'Github'"
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <nb-icon icon="github" pack="eva"></nb-icon>
+                        </a>
+                        <a
+                          *ngSwitchCase="'Telegram'"
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/telegram-icon.svg"
+                            alt="Telegram Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Discord'"
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/discord-icon.svg"
+                            alt="Discord Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Youtube'"
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/youtube-icon.svg"
+                            alt="Youtube Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Linkedin'"
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/linkedin-icon.svg"
+                            alt="Linkedin Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Linktree'"
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/linktree-icon.svg"
+                            alt="Linktree Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchDefault
+                          [href]="ref.uri"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <nb-icon icon="globe-outline" pack="eva"></nb-icon>
+                        </a>
+                      </ng-container>
+                    </div>
+                    <div
+                      *ngIf="pool.ref && pool.ref.length > 3"
+                      class="text-muted"
+                    >
+                      +{{ pool.ref.length - 3 }}
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Footer -->
+            <a
+              class="view-profile-btn"
+              href="{{`/spo/${pool.pool_id_bech32}`}}"
+            >
+              View Profile
+            </a>
+          </div>
+        </ng-container>
+        <ng-template #noPools>
+          <div class="d-flex justify-center align-items-center">
+            <h3 class="">No pool data</h3>
+          </div>
+        </ng-template>
+      </ng-container>
+      <ng-template #loadingPools>
+        <div
+          class="spo-card"
+          *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+        >
+          <app-card-skeleton height="200px"></app-card-skeleton>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Pagination -->
+    <div
+      class="pagination d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 gap-md-2 py-4"
+    >
+      <div class="d-flex align-items-center order-2 order-md-1 text-nowrap">
+        <span class="text-muted">
+          Showing {{ (currentPage - 1) * pageSize + 1 }} -
+          {{ Math.min(currentPage * pageSize, totalPools) }} of
+          {{ totalPools }} SPO
+        </span>
+      </div>
+
+      <div
+        class="d-flex align-items-center justify-content-center justify-content-md-end w-100 w-md-auto order-1 order-md-2"
+      >
+        <nb-icon
+          class="cursor-pointer p-2"
+          [class.disabled]="currentPage === 1"
+          icon="arrow-ios-back-outline"
+          pack="eva"
+          (click)="currentPage > 1 && onPageChange(currentPage - 1)"
+        ></nb-icon>
+        <div class="d-flex gap-2 mx-3">
+          <ng-container *ngFor="let page of pageRange">
+            <button
+              class="btn btn-sm"
+              [class.btn-primary]="page === currentPage"
+              (click)="onPageChange(page)"
+            >
+              {{ page }}
+            </button>
+          </ng-container>
+          <button
+            *ngIf="totalPages > 3 && currentPage < totalPages - 2"
+            class="btn btn-sm disabled"
+          >
+            ...
+          </button>
+          <button
+            *ngIf="totalPages > 3 && currentPage < totalPages - 2"
+            class="btn btn-sm"
+            (click)="onPageChange(totalPages)"
+          >
+            {{ totalPages }}
+          </button>
+        </div>
+        <nb-icon
+          class="cursor-pointer p-2"
+          [class.disabled]="currentPage === totalPages"
+          icon="arrow-ios-forward-outline"
+          pack="eva"
+          (click)="currentPage < totalPages && onPageChange(currentPage + 1)"
+        ></nb-icon>
+      </div>
+    </div>
+  </div>
+  <!-- End Table Section -->
+</div>

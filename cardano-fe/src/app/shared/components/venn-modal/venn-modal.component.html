@@ -1,0 +1,9 @@
+<div class="modal-header">
+  <h4 class="modal-title">ADA Allocation</h4>
+  <button class="close-btn" (click)="onClose()">
+    <nb-icon icon="close"></nb-icon>
+  </button>
+</div>
+<div class="modal-body">
+  <app-venn-diagram [sets]="data.sets" [showTitle]="false"></app-venn-diagram>
+</div>

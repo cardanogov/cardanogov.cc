@@ -1,0 +1,29 @@
+<nb-layout>
+  <!-- SIDEBAR -->
+  <nb-layout-header
+    subheader
+    class="w-fill z-[999]"
+    [ngClass]="{ 'ml-[2px]': !sidebarCompacted }"
+    [style]="{ position: 'fixed' }"
+  >
+    <app-header
+      class="w-full h-full flex justify-between items-center"
+    ></app-header>
+  </nb-layout-header>
+
+  <nb-sidebar left="true" [collapsedBreakpoints]="['md']" [state]="sidebarState">
+    <app-sidebar></app-sidebar>
+  </nb-sidebar>
+
+  <nb-layout-column class="colored-column-basic !pt-[6.5rem]">
+    <div class="">
+      <app-breadcrumb [items]="breadcrumbItems" class="block mb-6"></app-breadcrumb>
+      <router-outlet></router-outlet>
+    </div>
+  </nb-layout-column>
+
+  <!-- FOOTER -->
+  <nb-layout-footer>
+    <app-footer></app-footer>
+  </nb-layout-footer>
+</nb-layout>

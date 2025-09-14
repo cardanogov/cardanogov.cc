@@ -1,0 +1,14 @@
+<div class="search-container">
+  <div class="input-group">
+    <input
+      nbInput
+      type="text"
+      class="form-control"
+      placeholder="Search..."
+      [(ngModel)]="searchText"
+    />
+    <button nbButton status="primary" class="flex align-middle justify-center" (click)="onSearchClick()">
+      <nb-icon icon="search"></nb-icon>
+    </button>
+  </div>
+</div>

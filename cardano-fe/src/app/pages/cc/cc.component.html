@@ -1,0 +1,173 @@
+<div class="container-fluid py-2">
+  <!-- CARD SECTION -->
+  <ng-container *ngIf="!isLoading; else loadingCards">
+    <div class="card-container d-flex flex-wrap gap-4">
+      <!-- TOTAL GROUPS -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <p class="title">Total Groups</p>
+          <p class="value">{{ totalGroups }}</p>
+        </div>
+        <div class="icon-container">
+          <nb-icon icon="layers-outline" pack="eva"></nb-icon>
+        </div>
+      </div>
+
+      <!-- TOTAL MEMBERS -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <p class="title">Total Members</p>
+          <p class="value">{{ totalMembers }}</p>
+        </div>
+        <div class="icon-container">
+          <nb-icon icon="people-outline" pack="eva"></nb-icon>
+        </div>
+      </div>
+
+      <!-- TOTAL COUNTRIES -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <p class="title">CC Term</p>
+          <p class="value">2</p>
+        </div>
+        <div class="icon-container">
+          <nb-icon icon="globe-outline" pack="eva"></nb-icon>
+        </div>
+      </div>
+
+      <!-- TERM -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <p class="title">Tenure</p>
+          <span class="value">4 CC: Epoch 653 - 06/09/2026</span>
+          <span class="value">3 CC: Epoch {{ expiredEpoch }} - {{ expiredEpochDate }}</span>
+        </div>
+        <div class="icon-container">
+          <nb-icon icon="clock-outline" pack="eva"></nb-icon>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #loadingCards>
+    <div
+      class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr"
+    >
+      <app-card-skeleton
+        height="125px"
+        *ngFor="let i of [1, 2, 3, 4]"
+      ></app-card-skeleton>
+    </div>
+  </ng-template>
+
+  <!-- Charts Section -->
+  <div class="charts-grid">
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 mb-4"
+    >
+      <!-- Constitution Committee -->
+      <app-chart
+        title="Constitution Committee"
+        (expand)="
+          openModal('constitutionCommitteeChart', 'Constitution Committee')
+        "
+      >
+        <canvas #constitutionCommitteeChart></canvas>
+      </app-chart>
+
+      <!-- CC Members by Region -->
+      <app-chart
+        title="CC Members by Region"
+        (expand)="openModal('ccMembersByRegionChart', 'CC Members by Region')"
+      >
+        <canvas #ccMembersByRegionChart></canvas>
+      </app-chart>
+
+      <!-- Vote Statistics -->
+      <app-chart
+        title="Vote Statistics"
+        class="sm:col-span-2 lg:col-span-1"
+        (expand)="openModal('voteStatsChart', 'Vote Statistics')"
+      >
+        <canvas #voteStaticsChart></canvas>
+      </app-chart>
+    </div>
+  </div>
+
+  <!-- Constitution Committee Section with Pagination -->
+  <div class="committee-section">
+    <div class="committee-header">
+      <h2 class="title">{{ currentPageTitle }}</h2>
+    </div>
+
+    <ng-container *ngIf="!isLoading; else loadingCommittee">
+      <div class="committee-cards-container">
+        <app-committee-card
+          *ngFor="let cc of currentCcInfo; trackBy: trackByCcKey"
+          [id]="cc.value"
+          [logo]="getCcLogo(cc.key)"
+          [title]="cc.key"
+          [address]="cc.value"
+          [members]="cc.members"
+          [membersLink]="cc.link"
+          [votingPower]="'14,28%'"
+          [endDate]="getEndDate(cc)"
+          [endEpoch]="cc.endEpoch"
+          [currentEpoch]="currentEpoch"
+          [ccHot]="cc.cc_hot"
+          [ccCold]="currentPage === 1 ? cc.value : null"
+          [committeeInfo]="committeeInfo"
+        >
+        </app-committee-card>
+      </div>
+    </ng-container>
+
+    <ng-template #loadingCommittee>
+      <div class="committee-cards-container">
+        <app-card-skeleton
+          height="200px"
+          *ngFor="let i of [1, 2, 3, 4, 5, 6, 7]"
+        ></app-card-skeleton>
+      </div>
+    </ng-template>
+
+    <!-- Pagination -->
+    <div class="pagination d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 gap-md-2 py-4">
+      <div class="d-flex align-items-center order-2 order-md-1 text-nowrap">
+        <span class="text-muted">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-center justify-content-md-end w-100 w-md-auto order-1 order-md-2">
+        <nb-icon
+          [class.disabled]="currentPage === 1"
+          class="cursor-pointer p-2"
+          icon="arrow-ios-back-outline"
+          pack="eva"
+          (click)="previousPage()"
+        >
+        </nb-icon>
+        <div class="d-flex gap-2 mx-3">
+          <ng-container *ngFor="let page of displayedPages">
+            <button
+              class="btn btn-sm"
+              [class.btn-primary]="page === currentPage"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+          </ng-container>
+        </div>
+        <nb-icon
+          [class.disabled]="currentPage === totalPages"
+          class="cursor-pointer p-2"
+          icon="arrow-ios-forward-outline"
+          pack="eva"
+          (click)="nextPage()"
+        >
+        </nb-icon>
+      </div>
+    </div>
+  </div>
+</div>
+

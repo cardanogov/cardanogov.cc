@@ -1,0 +1,24 @@
+<div class="apex-modal-container">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ title }}</h4>
+        <button class="close-btn" (click)="onClose()">
+            <nb-icon icon="close"></nb-icon>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="chartApexOptions" style="width: 100%;">
+            <apx-chart
+                [series]="chartApexOptions!.series"
+                [chart]="chartApexOptions!.chart"
+                [dataLabels]="chartApexOptions!.dataLabels"
+                [stroke]="chartApexOptions!.stroke"
+                [xaxis]="chartApexOptions!.xaxis"
+                [yaxis]="chartApexOptions!.yaxis"
+                [fill]="chartApexOptions!.fill"
+                [markers]="chartApexOptions!.markers"
+                [tooltip]="chartApexOptions!.tooltip"
+                [grid]="chartApexOptions!.grid"
+            ></apx-chart>
+        </div>
+    </div>
+</div>

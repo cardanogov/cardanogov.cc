@@ -1,0 +1,16 @@
+<div class="venn-diagram-container">
+  <div *ngIf="showTitle" class="diagram-header">
+    <div class="title-container">
+      <img src="../../../../assets/images/Logo - remove background-2.png" alt="Logo" />
+      <p>ADA allocation</p>
+    </div>
+    <div class="icon-container">
+      <img (click)="onExpand()" src="../../../assets/icons/expand-simple.svg" alt="Expand Icon" />
+    </div>
+  </div>
+  <div class="diagram-container">
+    <svg #svgContainer class="venn-svg"></svg>
+  </div>
+
+  <div #tooltip class="tooltip"></div>
+</div>

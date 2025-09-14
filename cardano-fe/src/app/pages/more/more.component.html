@@ -1,0 +1,237 @@
+<div class="main-content ms-220 p-4">
+  <h2 class="title">Ways to use your Voting Power</h2>
+  <p>Using your voting power allows you to participate in Cardano Governance...</p>
+
+  <p>Every ADA holder has an amount of Voting Power equal to the amount of Lovelace they have in a wallet.
+    When you link a walletcontaining ADA to GovTool, GovTool will read the ADA balance in the wallet, and make it
+    available to you to use as Voting Power.</p>
+
+  <p>Voting Power can be used in several ways:</p>
+  <ul>
+    <li>&bullet; Delegate your Voting Power to a DRep. <a (click)="scrollToDelegatevotInPower()">How to delegate your Voting Power</a></li>
+    <li>&bullet; Delegate your Voting Power to <a href="https://docs.gov.tools/cardano-govtool/using-govtool/delegating/abstain-from-every-vote">"Abstain"</a> or <a href="https://docs.gov.tools/cardano-govtool/using-govtool/delegating/signal-no-confidence-on-every-vote">"Signal No Confidence"</a>.
+      These effectively instruct GovTool to cast these votes on every Governance Action on your behalf.
+      These options work like DReps, and they apply to every Governance Action that comes up for a vote.</li>
+    <li>
+      &bullet; Become a Direct Voter and Vote on Governance Actions by yourself. <a href="https://docs.gov.tools/cardano-govtool/using-govtool/direct-voting">How to become a Direct
+        Voter</a>
+    </li>
+    <li>
+      &bullet; Become a DRep and Vote on Governance Actions on behalf of other ADA holders. <a (click)="scrollToRegisterDRep()">How to become a
+        DRep</a>
+    </li>
+  </ul>
+
+  <h3 #delegatevotingpower class="title mt-5">How to delegate your Voting Power</h3>
+  <p>Following the successful Chang hard fork, individuals can now register as DReps and delegate ADA to them. The
+    Eternl wallet is mostly used for this purpose. In this article, you'll find a step-by-step guide on how to register
+    as a DRep and delegate decision-making power to a DRep.</p>
+
+  <h5>Eternl Wallet preparation</h5>
+  <p>First, ensure you have the latest version, v1.12.12. Older versions may not work properly.</p>
+  <p>You can check the current version in the bottom bar of the Eternl Wallet.</p>
+
+  <img src="assets/images/discord.png" class="img-fluid my-3 mx-auto" alt="Eternl Wallet Screenshot" />
+
+  <p>Alternatively, you can use the web interface at eternl.io.</p>
+  <p>If you want to manually force the upgrade of the Eternl Wallet (the extension) in Chrome, follow these steps.</p>
+  <ul>
+    <li>&bullet; Start Google Chrome.</li>
+    <li>&bullet; Click the vertical ellipsis icon. On the browser toolbar.</li>
+    <li>&bullet; Select More Tools -> Extensions.</li>
+    <li>&bullet; Click the Developer Mode button on the right side of the header.</li>
+    <li>&bullet; From there, you should see the 'Update' button pop right up.</li>
+    <li>&bullet; You will see an update notification.</li>
+  </ul>
+  <p>Other browsers should also support forcing the upgrade of extensions.</p>
+
+  <h5>Eternl Wallet preparation</h5>
+  <p>In the top menu, select 'Voting' and then choose 'Blockchain Governance'.</p>
+
+  <img src="assets/images/Blockchain-Governance.png" class="img-fluid my-3 mx-auto"
+    alt="Blockchain Governance Screenshot" />
+
+  <p>In the drop-down menu, you will see several options:</p>
+
+  <img src="assets/images/options.png" class="img-fluid my-3 mx-auto" alt="Options Screenshot" />
+  <ul>
+    <li>
+      &bullet; Own account: Select this if you want to become a DRep and vote for yourself. You will get a DRep ID that
+      you can share with others to ask them to delegate to you. You need to provide 500 ADA as a refundable deposit.
+    </li>
+    <li>
+      &bullet; Specify DRep ID: Select this if you want to delegate ADA to an already registered DRep. You will need to
+      know his/her ID and enter it in the provided field.
+    </li>
+    <li>
+      &bullet; Abstain: Select this if you do not want to participate in Cardano governance. Your ADA coins will not be
+      counted as part of the Active Voting Stake.
+    </li>
+    <li>
+      &bullet; No Confidence: Select this if you want to automatically vote YES for No-Confidence governance actions and
+      NO for other governance actions.
+    </li>
+  </ul>
+
+  <p>If you have selected the 'Own account' option, you can find the certificate containing the Drep ID in the
+    transaction.</p>
+
+  <img src="assets/images/drepid-screenshot.png" class="img-fluid my-3 mx-auto" alt="Drep ID Screenshot" />
+  <p>You can share the DRep ID with ADA holders.</p>
+  <p>You can see the delegation options in the picture. If you do not want to participate in governance, choose Abstain.
+    I believe most people will delegate ADA to DReps.</p>
+
+  <img src="assets/images/delegator-options.png" class="img-fluid my-3 mx-auto" alt="Delegator Options" />
+
+  <p>If you want to delegate to an existing DRep that has already been registered, select the second option, 'Specify
+    DRep ID', and enter the DRep ID in the provided field.</p>
+
+  <img src="assets/images/select-drep-id.png" class="img-fluid my-3 mx-auto" alt="Select Drep ID Screenshot" />
+
+  <p>DReps will publicly share their IDs. Alternatively, you can ask them directly to provide their ID to you.</p>
+  <p>The final step is to click 'Delegate' and sign the transaction.</p>
+
+  <h5>Signing the Transaction</h5>
+  <p>The transaction can be signed via any hot wallet or a hardware wallet.</p>
+  <p>However, please note that the Trezor Model T does not support the DRep registration certificate ('Own account'
+    option), so the transaction cannot be signed using this device.</p>
+  <p>You can delegate to another DRep at any time, similar to how you delegate ADA to a pool. You have the flexibility
+    to change your choice whenever you wish.</p>
+  <p>If you register as a DRep and later decide to stop performing this role or wish to retrieve your 500 ADA, you can
+    retire at any time.</p>
+  <p>You should find similar options in other wallets, though the interface may vary.</p>
+
+  <h5>Conclusion</h5>
+  <p>If you want to withdraw staking rewards, you must first delegate to a DRep. You can choose any of the options
+    described. Immediate delegation is not required, as you won't lose any staking rewards. Staking rewards will
+    continue to be credited to your account regularly, just as they were before the Chang hard fork. However, withdrawal
+    is not possible without delegation.</p>
+  <p>There are two formats for DRep IDs: CIP-120 and the newer CIP-129. If you registered as a DRep in an older version
+    of Eternl and then upgraded to a newer version, you will see the same number but in a different format. On-chain, it
+    remains the same number.</p>
+
+  <h3 class="title mt-5">DReps</h3>
+  <p><a href="https://docs.sanchogov.tools/faqs/what-is-a-drep">Delegated Representatives (DReps)</a> are ADA holders who registered On-Chain to allow other members of
+    the community to delegate their voting power to them, so that they can vote on their behalf. They are are like
+    'parlimentary representatives' in the Governance system.</p>
+  <p>Any ADA holder can become a DRep. They simply need to register on GovTool (or other platform). <a (click)="scrollToRegisterDRep()">How to
+      become a DRep</a></p>
+
+  <p>DReps are defined by <a href="https://www.1694.io/en">CIP-1694</a>. They can:</p>
+  <ul>
+    <li>&bullet; Submit Governance Actions</li>
+    <li>&bullet; Review and submit votes on active Governance Actions</li>
+    <li>&bullet; Accept delegated Voting Power from any ADA holder</li>
+  </ul>
+
+  <p>When a DRep votes on a Governance Action, they vote with all the <a href="https://docs.gov.tools/cardano-govtool/faqs/what-is-voting-power">Voting Power</a> that is delegated to
+    them.</p>
+
+  <h3 #registerDRep class="title mt-5">Register as a DRep</h3>
+  <h5>How to register as a DRep</h5>
+  <h6>1. Dashboard</h6>
+  <p>From the dashboard, click "Register" in the "Become a DRep" panel:</p>
+  <img src="assets/images/gov-panel-screenshot.png" class="img-fluid my-3 mx-auto" alt="GOV Panel Screenshot" />
+
+  <h6>2. Roles and Responsibilites</h6>
+  <p>Explains what a DRep does, and tells you about the refundable deposit.</p>
+  <img src="assets/images/role-responsibities-screen-shoot.png" class="img-fluid my-3 mx-auto"
+    alt="Role Responsibities Screenshot" />
+
+  <h6>3. DRep Info</h6>
+  <p>The DRep name is required, and there are three other fields that are optional: Email, Bio, and Link(s). You can add
+    up to 8 links. This information will be displayed you your DRep page, and publicly available to all users of GovTool
+  </p>
+  <img src="assets/images/enter-drep-name.png" class="img-fluid my-3 mx-auto" alt="Enter Drep Name Screenshot" />
+
+  <h6>4. Data storage confirmation</h6>
+  <p>DRep data is not stored on-chain. Every DRep must responsibly store their information off-chain and pass that link
+    back to GovTool (on the following screen). You must check the box and agree to this to proceed with registration.
+  </p>
+  <img src="assets/images/data-storage-confimation.png" class="img-fluid my-3 mx-auto"
+    alt="Data Storage Confimation Screenshot" />
+
+  <h6>5. Storing your information</h6>
+  <p>There are three steps to storing your information:</p>
+  <ul>
+    <li>&bullet; Download the file to your computer. This file contains the DRep registration info that you entered in
+      the registration form.</li>
+    <li>&bullet; Save the file in a location that will provide you with a publicly-accessible URL.</li>
+    <li>&bullet; Copy the URL from the location above and paste it into the URL field.</li>
+  </ul>
+
+  <h6>6. Example using GitHub <a (click)="scrollToExampleIPFS()">See example using IPFS</a></h6>
+  <p>This example uses a new public repo for simplicity.</p>
+  <ul>
+    <li>&bullet; Upload the file you downloaded in the step above to GitHub</li>
+    <li>&bullet; Commit the changes to the repository with the green button at the bottom right</li>
+  </ul>
+  <img src="assets/images/example-using-github.png" class="img-fluid my-3 mx-auto"
+    alt="Example Using Github Screenshot" />
+
+  <h6>7. In GitHub, find the file you uploaded, click on it's name.</h6>
+  <img src="assets/images/check-upload-file.png" class="img-fluid my-3 mx-auto" alt="Check Uploaded File Screenshot" />
+
+  <h6>8. In Code view, click on the "Raw" button</h6>
+  <p>This will take you to the 'Raw' view where you can copy the URL for the code</p>
+  <img src="assets/images/code-view.png" class="img-fluid my-3 mx-auto" alt="Code View Screenshot" />
+
+  <h6>9. In Code view, click on the "Raw" button</h6>
+  <img src="assets/images/click-raw-button.png" class="img-fluid my-3 mx-auto" alt="Click Raw Button Screenshot" />
+
+  <h6>10. Return to GovTool and paste in the URL</h6>
+  <p>This will take you to the 'Raw' view where you can copy the URL for the code</p>
+  <img src="assets/images/paste-url.png" class="img-fluid my-3 mx-auto" alt="Paste Url Screenshot" />
+
+  <h6>11. Sign the transaction in your wallet</h6>
+  <img src="assets/images/sign-up-transaction.png" class="img-fluid my-3 mx-auto"
+    alt="Sign Up Transaction Screenshot" />
+
+  <h6>12. Your transaction will be submitted to the blockchain</h6>
+  <img src="assets/images/trasaction-submitted.png" class="img-fluid my-3 mx-auto"
+    alt="Trasaction Submitted Screenshot" />
+
+  <h6>13. Now you are registered as a DRep</h6>
+  <img src="assets/images/drep-created-success.png" class="img-fluid my-3 mx-auto"
+    alt="Drep Created Success Screenshot" />
+
+  <h3 #exampleIPFS class="title mt-5">Store data using IPFS</h3>
+  <h6>Store data using IPFS</h6>
+  <p>One of the simplest ways to store data using IPFS is by using the IPFS desktop app. You can download it here: <a
+      href="https://docs.ipfs.tech/install/ipfs-desktop/">https://docs.ipfs.tech/install/ipfs-desktop/</a></p>
+  <img src="assets/images/install-the-IPFS.png" class="img-fluid my-3 mx-auto" alt="Install The IPFS Screenshot" />
+
+  <p>Choose your platform and download and install the desktop app on your computer.</p>
+  <p>Upload the .jsonld file you from GovTool to IPFS by using the "Import > File" option on the top right of the screen
+  </p>
+  <img src="assets/images/import-file.png" class="img-fluid my-3 mx-auto" alt="Import File Screenshot" />
+
+  <p>Once the file is uploaded, you need to set it's 'pinning'. Select the file in the list, click on the three dots at
+    the far right of the screen, and choose "Set Pinning"</p>
+  <img src="assets/images/set-pinning.png" class="img-fluid my-3 mx-auto" alt="Set Pinning Screenshot" />
+
+  <p>Click the "Local Node" checkbox and then the "Apply" button</p>
+  <img src="assets/images/local-node.png" class="img-fluid my-3 mx-auto" alt="Click Local Node Checkbox Screenshot" />
+
+  <p>You will now see the Files list again. Click the three dots again, and choose "Share Link"</p>
+  <img src="assets/images/share-link.png" class="img-fluid my-3 mx-auto" alt="Share Link Screenshot" />
+
+  <p>Click "Copy" to copy the link</p>
+  <img src="assets/images/copy-link.png" class="img-fluid my-3 mx-auto" alt="Copy Link Screenshot" />
+
+  <p>Paste it back into GovTool and click "Submit"</p>
+  <img src="assets/images/submit-link.png" class="img-fluid my-3 mx-auto" alt="Submit Link Screenshot" />
+
+  <p>Sign the transaction with your wallet:</p>
+  <img src="assets/images/sign-transaction-with-wallet.png" class="img-fluid my-3 mx-auto"
+    alt="Sign Transaction With Wallet Screenshot" />
+
+  <p>Your transaction will be checked and submitted:</p>
+  <img src="assets/images/submit-transaction.png" class="img-fluid my-3 mx-auto" alt="Submit Transaction Screenshot" />
+
+  <p>You can return to the dashboard, and when the transaction is submitted, you will see your DRep registration there.
+  </p>
+  <img src="assets/images/drep-registered.png" class="img-fluid my-3 mx-auto" alt="Drep Registered Screenshot" />
+
+  <p class="mb-10">You are now registered and can vote as a DRep and also accept delegated voting power from others.</p>
+</div>

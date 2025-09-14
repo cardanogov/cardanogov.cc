@@ -1,0 +1,236 @@
+<div class="item-container">
+  <!-- CARD SECTION -->
+  <div class="card-container grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+    <ng-container *ngIf="!isLoading; else loadingCards">
+      <!-- VOTING CARD -->
+      <div class="card">
+        <div class="title-container">
+          <p class="title">Register to vote</p>
+          <div class="icon-container">
+            <img class="ml-2" src="assets/icons/vote-icon.svg" alt="Icon"
+              style="
+                  filter: invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg)
+                    brightness(93%) contrast(90%);
+                ">
+          </div>
+        </div>
+        <span class="d-flex">
+          <p class="value">{{ currentRegister }} ₳</p>
+          <div class="change-badge ml-1">
+            <span
+              [ngClass]="{
+                positive: registerChange >= 0,
+                negative: registerChange < 0
+              }"
+            >
+              {{ registerChange > 0 ? "+" : "" }}{{ registerChange || "0" }}%
+            </span>
+            Since last epoch
+          </div>
+        </span>
+        <div class="progress mt-2 mb-1" style="height: 15px">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="registerToSupplyPercent"
+            [attr.aria-valuenow]="registerToSupplyPercent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #00b2f8"
+          >
+            {{ registerToSupplyPercent | number : '1.1-1' }}%
+          </div>
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="100 - registerToSupplyPercent"
+            [attr.aria-valuenow]="100 - registerToSupplyPercent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #808080"
+          >
+            {{ 100 - registerToSupplyPercent | number : '1.1-1' }}%
+          </div>
+        </div>
+        <p class="detail">Governance Participation Rate: {{ registerRate }}%</p>
+      </div>
+
+      <!-- ADA ABSTAIN CARD -->
+      <div class="card">
+        <div class="title-container">
+          <p class="title">Always abstain</p>
+          <div class="icon-container">
+            <nb-icon icon="minus-circle-outline" pack="eva"></nb-icon>
+          </div>
+        </div>
+        <p class="value">{{ abstainAmount }} ₳</p>
+        <div class="progress mt-2 mb-1" style="height: 15px">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="abstainToRegisterPercent"
+            [attr.aria-valuenow]="abstainToRegisterPercent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #dcdc04"
+          >
+            {{ abstainToRegisterPercent | number : '1.1-1' }}%
+          </div>
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="100 - abstainToRegisterPercent"
+            [attr.aria-valuenow]="100 - abstainToRegisterPercent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #00b2f8"
+          >
+            {{ 100 - abstainToRegisterPercent | number : '1.1-1' }}%
+          </div>
+        </div>
+        <p class="detail">Always abstain/Register to vote: {{ abstainRate }}%</p>
+      </div>
+
+      <!-- ADA STAKING CARD -->
+      <div class="card">
+        <div class="title-container">
+          <p class="title">ADA staking</p>
+          <div class="icon-container">
+            <img
+              src="../../../assets/icons/coin-stacked.svg"
+              alt="Delegation Icon"
+              style="
+                filter: invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg)
+                  brightness(93%) contrast(90%);
+              "
+            />
+          </div>
+        </div>
+        <p class="value">{{ currentStake }} ₳</p>
+        <div class="change-badge">
+          <span
+            [ngClass]="{
+              positive: stakeChange >= 0,
+              negative: stakeChange < 0
+            }"
+          >
+            {{ stakeChange > 0 ? "+" : "" }}{{ stakeChange || "0" }}%
+          </span>
+          Since last epoch
+        </div>
+      </div>
+
+      <!-- CIRCULATING ADA SUPPLY CARD -->
+      <div class="card">
+        <div class="title-container">
+          <p class="title">Circulating ADA Supply</p>
+          <div class="icon-container">
+            <nb-icon icon="pie-chart-outline" pack="eva"></nb-icon>
+          </div>
+        </div>
+        <p class="value">{{ currentSuplly }} ₳</p>
+        <div class="progress mt-2 mb-1" style="height: 15px">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="supplyRate"
+            [attr.aria-valuenow]="supplyRate"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #00b2f8"
+          >
+            {{ supplyRate | number : '1.1-1' }}%
+          </div>
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="100 - supplyRate"
+            [attr.aria-valuenow]="100 - supplyRate"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #808080"
+          >
+            {{ 100 - supplyRate | number : '1.1-1' }}%
+          </div>
+        </div>
+        <p class="detail">
+          Circulating ADA Supply/ Max supply: {{ supplyRate }}%
+        </p>
+      </div>
+
+      <!-- VOTER DELEGATION CARD -->
+      <div class="card delegation-card">
+        <div class="title-container">
+          <p class="title">Voter Delegation</p>
+          <div class="icon-container">
+            <img
+              src="../../../assets/icons/share-dots.svg"
+              alt="Delegation Icon"
+              style="filter: invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(93%) contrast(90%);"
+            />
+          </div>
+        </div>
+        <button (click)="delegation()" class="delegation-button">
+          Delegation
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #loadingCards>
+      <div
+        class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 auto-rows-fr"
+      >
+        <app-card-skeleton
+          width="200px"
+          height="125px"
+          *ngFor="let i of [1, 2, 3, 4, 5]"
+        ></app-card-skeleton>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- CHART SECTION -->
+  <div class="charts-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <app-venn-diagram [sets]="VennSet" (expand)="onExpandAllocation(this.VennSet)"></app-venn-diagram>
+
+      <app-chart
+        title="Voting participation index"
+        (expand)="openModal('votingParticipation', 'Voting participation index')"
+      >
+        <canvas class="voting-participation-chart" #votingParticipation></canvas>
+      </app-chart>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <app-chart
+        title="Vote statistics"
+        (expand)="openModal('voteStatistics', 'Vote statistics')"
+      >
+        <canvas class="voting-statistics-chart" #voteStatistics></canvas>
+      </app-chart>
+
+      <app-chart
+        title="Vote statistics 2"
+        (expand)="openModal('voteStatistics2', 'Vote statistics 2')"
+      >
+        <canvas class="voting-statistics-chart" #voteStatistics2></canvas>
+      </app-chart>
+    </div>
+  </div>
+
+  <!-- TABLE SECTION -->
+  <app-table
+    [columns]="tableColumns"
+    [data]="displayData"
+    [filters]="tableFilters"
+    [currentPage]="currentPage"
+    [itemsPerPage]="itemsPerPage"
+    [totalItems]="totalItems"
+    (pageChange)="onPageChange($event)"
+    (filterChange)="onFilterChange($event)"
+    (searchChange)="onSearchChange($event)"
+    title="Voting History"
+    [loading]="isTableLoading"
+  >
+  </app-table>
+</div>

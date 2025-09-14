@@ -1,0 +1,466 @@
+<div class="dashboard-container">
+  <!-- Top Stats Row -->
+  <div class="w-full card-container mb-3 gap-3 auto-rows-fr">
+    <ng-template #cardContent>
+      <!-- Governance Actions Card -->
+      <div class="card governance-actions h-full">
+        <p class="title">Governance Actions</p>
+        <div class="value-container flex items-center">
+          <span class="value !text-3xl">{{
+            governanceAction.totalProposals
+          }}</span>
+          <span
+            [ngClass]="
+              governanceAction.difference! >= 0 ? 'positive' : 'negative'
+            "
+            class="change-badge"
+            >{{ governanceAction.difference! >= 0 ? "+" : ""
+            }}{{ governanceAction.difference | number }}</span
+          >
+          <span class="change-badge text-sm">Since last epoch</span>
+        </div>
+        <div class="progress mt-2 mb-1" style="height: 15px">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="approvalRate"
+            [attr.aria-valuenow]="approvalRate"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #00b2f8"
+          >
+            {{ approvalRate | number : "1.1-1" }}%
+          </div>
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="100 - approvalRate"
+            [attr.aria-valuenow]="100 - approvalRate"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="background-color: #808080"
+          >
+            {{ 100 - approvalRate | number : "1.1-1" }}%
+          </div>
+        </div>
+        <p class="detail">
+          {{ governanceAction.approvedProposals }} Approved /
+          {{
+            governanceAction.totalProposals
+          }}
+          Governance Actions
+        </p>
+      </div>
+
+      <!-- Membership Card -->
+      <div class="card membership h-full">
+        <p class="title">Membership</p>
+        <div class="membership-stats">
+          <div class="flex items-center gap-1 leading-[24px]">
+            <app-icon
+              [size]="18"
+              [category]="'dashboard'"
+              [icon]="'people-outline'"
+            />
+            <span>Delegators :</span>
+            <span class="value">{{
+              membershipData.total_stake_addresses?.toLocaleString()
+            }}</span>
+          </div>
+          <div class="flex items-center gap-1 leading-[24px]">
+            <app-icon [size]="18" [category]="'dashboard'" [icon]="'network'" />
+            <span>SPO:</span>
+            <span class="value">{{
+              membershipData.total_pool?.toLocaleString()
+            }}</span>
+          </div>
+          <div class="flex items-center gap-1 leading-[24px]">
+            <app-icon
+              [size]="18"
+              [category]="'dashboard'"
+              [icon]="'share-dots'"
+            />
+            <span>DReps:</span>
+            <span class="value">{{
+              membershipData.total_drep?.toLocaleString()
+            }}</span>
+          </div>
+          <div class="flex items-center gap-1 leading-[24px]">
+            <app-icon
+              [size]="18"
+              [category]="'dashboard'"
+              [icon]="'briefcase-line'"
+            />
+            <span>CC:</span>
+            <span class="value">{{ membershipData.total_committee || 0 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Votes Card -->
+      <div class="card active-votes h-full position-relative">
+        <div class="flex items-center w-full justify-between h-[90px] gap-3">
+          <p class="title text-nowrap">Governance vote</p>
+          <div class="h-full flex-1 min-w-0">
+            <canvas #activeVotesChart></canvas>
+          </div>
+        </div>
+        <div class="votes-stats">
+          <div class="flex items-center gap-1 leading-[24px]">
+            <span>Active:</span>
+            <span class="value"
+              >₳{{ totalStakeNumbers.total_active || 0 }} B</span
+            >
+          </div>
+          <div class="flex items-center gap-1 leading-[24px]">
+            <span>Abstain:</span>
+            <span class="value"
+              >₳{{ totalStakeNumbers.total_abstain || 0 }} B</span
+            >
+          </div>
+          <div class="flex items-center gap-1 leading-[24px]">
+            <span>No Confidence:</span>
+            <span class="value"
+              >₳{{ totalStakeNumbers.total_no_confidence || 0 }} B</span
+            >
+          </div>
+          <div class="flex items-center gap-1 leading-[24px]">
+            <span>Total Register:</span>
+            <span class="value"
+              >₳{{ totalStakeNumbers.total_register || 0 }} B</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Stake Card -->
+      <div class="card stake h-full">
+        <div class="flex items-center justify-between h-[120px] gap-3">
+          <div>
+            <p class="title">Stake</p>
+            <p class="value text-nowrap !text-3xl">
+              {{
+                (totalStake.totalADA / totalStake.totalSupply) * 100
+                  | number : "1.2-2"
+              }}%
+            </p>
+          </div>
+          <div class="h-full w-full flex-1 min-w-0">
+            <canvas #stakeChart></canvas>
+          </div>
+        </div>
+        <div class="stake-stats">
+          <div class="flex items-center gap-1 leading-[24px]">
+            <span>Total ADA Staked:</span>
+            <span class="value">₳{{ totalStake.totalADA }} B</span>
+          </div>
+          <div class="flex items-center gap-1 leading-[24px]">
+            <span>Circulating supply:</span>
+            <span class="value">₳{{ totalStake.totalSupply }} B</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Treasury Card -->
+      <div class="card treasury h-full">
+        <div class="flex items-center justify-between h-[120px] gap-3">
+          <div>
+            <p class="title">Treasury</p>
+            <p class="value text-nowrap !text-3xl m-0">
+              ₳{{ treasuryData.treasury }}
+            </p>
+            <div class="flex items-center gap-1 leading-[24px] text-nowrap">
+              <span>Asset value:</span>
+              <span class="value">${{ treasuryData.treasuryValue }} B</span>
+            </div>
+          </div>
+          <div class="h-full w-full flex-1 min-w-0">
+            <canvas #treasuryCardChart></canvas>
+          </div>
+        </div>
+        <div class="treasury-stats">
+          <div class="progress my-1" style="height: 30px">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="treasuryData.percentWithdrawals"
+              [attr.aria-valuenow]="treasuryData.percentWithdrawals"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              style="background-color: #00b2f8"
+            >
+              {{ treasuryData.percentWithdrawals | number : "1.2-2" }}%
+            </div>
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="100 - treasuryData.percentWithdrawals"
+              [attr.aria-valuenow]="100 - treasuryData.percentWithdrawals"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              style="background-color: #dcdc04"
+            >
+              {{ 100 - treasuryData.percentWithdrawals | number : "1.2-2" }}%
+            </div>
+          </div>
+          <p class="detail !text-black !font-bold">
+            ₳{{ treasuryData.totalWithdrawals }} Treasury withdraw
+          </p>
+        </div>
+      </div>
+    </ng-template>
+    <ng-container *ngIf="isLoadingCard; else cardContent">
+      <app-card-skeleton
+        class="h-full"
+        height="150px"
+        width="25%"
+        *ngFor="let i of [1, 2, 3, 4, 5]"
+      ></app-card-skeleton>
+    </ng-container>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="charts-grid">
+    <ng-container *ngIf="isLoadingChart; else chartsContent">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <app-chart-skeleton
+          *ngFor="
+            let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+          "
+        ></app-chart-skeleton>
+      </div>
+    </ng-container>
+
+    <ng-template #chartsContent>
+      <!-- First Row - Voting Power Distribution -->
+      <div class="grid dashboard-grid-cols gap-4 mb-4">
+        <!-- DReps Voting Power -->
+        <app-chart
+          id="dreps-voting-power-chart"
+          title="DReps Voting Power"
+          (expand)="openModal('drepsVoting', 'DReps Voting Power')"
+        >
+          <canvas #drepsVotingChart></canvas>
+        </app-chart>
+
+        <!-- SPO Voting Power -->
+        <app-chart
+          id="spo-voting-power-chart"
+          title="SPO Voting Power"
+          [showGroup]="isGroupSpo"
+          (group)="groupSpoVotingPower()"
+          (expand)="openModal('spoVoting', 'SPO Voting Power')"
+        >
+          <canvas #spoVotingChart></canvas>
+        </app-chart>
+
+        <!-- Constitutional Committee -->
+        <app-chart
+          id="constitutional-committee-chart"
+          title="Constitutional Committee"
+          [showToggle]="true"
+          toggleIcon="../../../assets/icons/hamburger.svg"
+          toggleIconAlt="../../../assets/icons/close.svg"
+          [toggleState]="!chartDisplayNewCCs"
+          (expand)="
+            openModal('constitutionalCommittee', 'Constitutional Committee')
+          "
+          (toggle)="toggleConstitutionalCommitteeChart()"
+        >
+          <canvas #constitutionalCommitteeChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Second Row - Participation and Wallet Stats -->
+      <div class="grid dashboard-grid-cols-2 gap-4 mb-4">
+        <!-- Electoral Participants -->
+        <app-chart
+          id="participate-in-voting-chart"
+          title="Electoral Participants"
+          (expand)="openModal('participationVoting', 'Electoral Participants')"
+        >
+          <canvas class="canvas-min-height" #participationChart></canvas>
+        </app-chart>
+
+        <!-- Wallet Address Statistics -->
+        <app-chart
+          id="wallet-address-stats-chart"
+          title="Wallet Address Statistics"
+          (expand)="openModal('walletStats', 'Wallet Address Statistics')"
+        >
+          <canvas class="canvas-min-height" #walletAddressStatsChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Third Row - Governance Actions -->
+      <div class="grid dashboard-grid-cols-2 gap-4 mb-4">
+        <!-- Governance Actions Statistics -->
+        <app-chart
+          id="governance-actions-chart"
+          title="Governance Actions Statistics"
+          (expand)="
+            openModal('governanceActions', 'Governance Actions Statistics')
+          "
+        >
+          <canvas class="canvas-min-height" #governanceActionsChart></canvas>
+        </app-chart>
+
+        <!-- Governance Actions by Epoch -->
+        <app-chart
+          id="governance-actions-by-epoch-chart"
+          title="Governance Actions by Epoch"
+          (expand)="
+            openModal('governanceByEpoch', 'Governance Actions by Epoch')
+          "
+        >
+          <canvas
+            class="canvas-min-height"
+            #governanceActionsByEpochChart
+          ></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Fourth Row - Voting Thresholds -->
+      <div class="grid dashboard-grid-cols-2 gap-4 mb-4">
+        <!-- DRep Voting Threshold -->
+        <app-chart
+          id="drep-voting-threshold-chart"
+          title="DRep Voting Threshold"
+          (expand)="openModal('drepVotingThreshold', 'DRep Voting Threshold')"
+        >
+          <canvas class="canvas-min-height" #drepVotingThresholdChart></canvas>
+        </app-chart>
+
+        <!-- Pool Voting Threshold -->
+        <app-chart
+          id="pool-voting-threshold-chart"
+          title="Pool Voting Threshold"
+          (expand)="openModal('poolVotingThreshold', 'Pool Voting Threshold')"
+        >
+          <canvas class="canvas-min-height" #poolVotingThresholdChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Fifth Row  - ADA Statistics -->
+      <div class="grid dashboard-grid-cols-2 gap-4 mb-4">
+        <!-- ADA Statistics -->
+        <app-chart
+          id="ada-stats-chart"
+          title="ADA Statistics"
+          (expand)="onExpandADAStatitics(this.chartApexOptions)"
+        >
+          <div *ngIf="ischartApexOptionsLoaded">
+            <apx-chart
+              [series]="chartApexOptions!.series"
+              [chart]="chartApexOptions!.chart"
+              [dataLabels]="chartApexOptions!.dataLabels"
+              [stroke]="chartApexOptions!.stroke"
+              [xaxis]="chartApexOptions!.xaxis"
+              [yaxis]="chartApexOptions!.yaxis"
+              [fill]="chartApexOptions!.fill"
+              [markers]="chartApexOptions!.markers"
+              [tooltip]="chartApexOptions!.tooltip"
+              [grid]="chartApexOptions!.grid"
+            ></apx-chart>
+          </div>
+          <app-chart-skeleton
+            *ngIf="!ischartApexOptionsLoaded"
+          ></app-chart-skeleton>
+        </app-chart>
+
+        <!-- ADA Statistics in % -->
+        <app-chart
+          id="ada-stats-perentage-chart"
+          title="ADA Statistics in %"
+          [showGroup]="isGroupAdaStatsPercentage"
+          (group)="groupAdaStatsPercentage()"
+          (expand)="openModal('adaStatsPercentage', 'ADA Statistics in %')"
+        >
+          <canvas class="canvas-min-height" #adaStatsPercentageChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Sixth Row - Treasury -->
+      <div class="grid dashboard-grid-cols-2 gap-4 mb-4">
+        <!-- Treasury Volatility -->
+        <app-chart
+          id="treasury-volatility-chart"
+          title="Treasury Volatility"
+          (expand)="onExpandTreasuryVolatility(this.chartTreasuryVolatilityOptions)"
+        >
+          <div *ngIf="isTreasuryVolatilityLoaded">
+            <apx-chart
+              [series]="chartTreasuryVolatilityOptions!.series"
+              [chart]="chartTreasuryVolatilityOptions!.chart"
+              [dataLabels]="chartTreasuryVolatilityOptions!.dataLabels"
+              [stroke]="chartTreasuryVolatilityOptions!.stroke"
+              [xaxis]="chartTreasuryVolatilityOptions!.xaxis"
+              [yaxis]="chartTreasuryVolatilityOptions!.yaxis"
+              [fill]="chartTreasuryVolatilityOptions!.fill"
+              [markers]="chartTreasuryVolatilityOptions!.markers"
+              [tooltip]="chartTreasuryVolatilityOptions!.tooltip"
+              [grid]="chartTreasuryVolatilityOptions!.grid"
+            ></apx-chart>
+          </div>
+          <app-chart-skeleton
+            *ngIf="!isTreasuryVolatilityLoaded"
+          ></app-chart-skeleton>
+        </app-chart>
+
+        <!-- Treasury withdraw-->
+        <app-chart
+          id="treasury-chart"
+          title="Treasury withdraw"
+          (expand)="openModal('treasury', 'Treasury')"
+        >
+          <canvas class="canvas-min-height" #treasuryChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Group Charts - Full Width -->
+      <!-- Network Group -->
+      <div class="grid grid-cols-1 mb-4">
+        <app-chart
+          id="network-group-chart"
+          title="Network Group"
+          (expand)="openModal('networkGroup', 'Network Group')"
+        >
+          <canvas class="canvas-min-height" #networkGroupChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Economic Group -->
+      <div class="grid grid-cols-1 mb-4">
+        <app-chart
+          id="economic-group-chart"
+          title="Economic Group"
+          (expand)="openModal('economicGroup', 'Economic Group')"
+        >
+          <canvas class="canvas-min-height" #economicGroupChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Technical Group -->
+      <div class="grid grid-cols-1 mb-4">
+        <app-chart
+          id="technical-group-chart"
+          title="Technical Group"
+          (expand)="openModal('technicalGroup', 'Technical Group')"
+        >
+          <canvas class="canvas-min-height" #technicalGroupChart></canvas>
+        </app-chart>
+      </div>
+
+      <!-- Governance Group -->
+      <div class="grid grid-cols-1 mb-4">
+        <app-chart
+          id="governance-group-chart"
+          title="Governance Group"
+          (expand)="openModal('governanceGroup', 'Governance Group')"
+        >
+          <canvas class="canvas-min-height" #governanceGroupChart></canvas>
+        </app-chart>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="carousel-container">
+  <button class="nav-button left" (click)="scrollLeft()">&#10094;</button>
+  <div class="carousel" #carousel>
+    <div *ngFor="let item of items" class="carousel-item">
+      <ng-container *ngIf="template; else defaultTemplate">
+        <ng-container *ngTemplateOutlet="template; context: { $implicit: item }"></ng-container>
+      </ng-container>
+      <ng-template #defaultTemplate>
+        <span>{{ item.id }}</span>
+      </ng-template>
+    </div>
+  </div>
+  <button class="nav-button right" (click)="scrollRight()">&#10095;</button>
+</div>

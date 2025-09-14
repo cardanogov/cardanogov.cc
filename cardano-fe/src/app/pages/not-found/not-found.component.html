@@ -1,0 +1,35 @@
+<div class="not-found-container">
+  <div class="not-found-content">
+    <div class="error-code">404</div>
+    <div class="error-title">Page Not Found</div>
+    <div class="error-description">
+      Sorry, the page you are looking for does not exist or has been moved.
+    </div>
+
+    <div class="error-actions">
+      <button
+        class="btn btn-primary"
+        (click)="goHome()"
+        type="button">
+        <i class="eva eva-home-outline"></i>
+        Go to Home
+      </button>
+
+      <button
+        class="btn btn-outline-secondary"
+        (click)="goBack()"
+        type="button">
+        <i class="eva eva-arrow-back-outline"></i>
+        Go Back
+      </button>
+    </div>
+  </div>
+
+  <div class="error-illustration">
+    <div class="floating-elements">
+      <div class="element element-1"></div>
+      <div class="element element-2"></div>
+      <div class="element element-3"></div>
+    </div>
+  </div>
+</div>

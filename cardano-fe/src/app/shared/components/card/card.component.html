@@ -1,0 +1,45 @@
+<div class="card">
+  <div class="d-flex justify-content-between">
+    <div class="d-flex flex-column w-70">
+      <h6 class="title">{{ title }}</h6>
+      @if(showButton) {
+      <button (click)="onClickEvent($event)" class="btn-custom text-white d-flex align-items-center px-4 rounded-pill">
+        Voting
+        <img class="ml-2" src="assets/icons/vote-icon.svg" alt="Icon">
+      </button>
+      } @else {
+      <div class="row">
+        <span class="value mt-2" [ngClass]="{'col-4': showChart, 'col-6': !showChart}">{{ value }}</span>
+        @if(showChart) {
+        <div class="col-8">
+          <canvas #lineCanvas width="100%" height="40%"></canvas>
+        </div>
+        }
+      </div>
+      }
+      @if(showChange) {
+      <div class="footer-content mt-2">
+        <div class="change-badge">
+          <span [class.positive]="isPositive" [class.negative]="!isPositive">
+            +{{ percentageChange }}
+          </span>
+          Since last epoch
+        </div>
+      </div>
+      }
+    </div>
+    <div class="icon-container">
+      <ng-container *ngIf="iconImg; else iconBlock">
+        <img [src]="'../../../assets/icons/' + iconImg" alt="Icon" style="filter: grayscale(1) brightness(0.5) sepia(1) hue-rotate(0deg) saturate(0) opacity(1);">
+      </ng-container>
+      <ng-template #iconBlock>
+        <ng-container *ngIf="icon; else noIcon">
+          <img [src]="'../../../assets/icons/' + icon" alt="Icon" style="filter: grayscale(1) brightness(0.7) opacity(0.5);">
+        </ng-container>
+        <ng-template #noIcon>
+          <nb-icon [icon]="icon" pack="eva"></nb-icon>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+</div>

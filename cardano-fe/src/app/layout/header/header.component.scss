@@ -1,0 +1,163 @@
+::ng-deep {
+  .search-popover {
+    left: 0 !important;
+    nb-popover {
+      width: 100vw;
+
+      span.arrow {
+        display: none !important;
+      }
+    }
+  }
+
+  input {
+    max-width: 100% !important;
+  }
+
+  .header-right {
+    nb-menu {
+      ul {
+        display: flex;
+
+        li {
+          border-bottom: none !important;
+        }
+      }
+    }
+  }
+
+  nb-icon {
+    font-size: 30px !important;
+    width: 30px !important;
+    height: 30px !important;
+
+    &:hover {
+      color: #0086ad !important;
+    }
+  }
+
+  nb-badge {
+    top: -0.5rem !important;
+    left: 1.25rem !important;
+    right: unset !important;
+  }
+
+  nb-action {
+    border-left: none !important;
+  }
+
+  @media (min-width: 768px) {
+    .context-menu {
+      width: 200px;
+
+      .menu-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; // Two columns
+        gap: 10px; // Space between items
+      }
+    }
+  }
+
+  .context-menu {
+    width: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+
+    .menu-item {
+      display: flex;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+      text-decoration: none;
+      color: black;
+    }
+
+    .menu-item:hover {
+      background: #ffc19f;
+    }
+
+    .menu-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .menu-content h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: bold;
+      line-height: 1rem;
+    }
+
+    .menu-content p {
+      margin: 0;
+      font-size: 10px;
+      line-height: 0.75rem;
+    }
+  }
+
+  .notify-menu {
+    width: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+
+    .notify-item {
+      display: flex;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+      text-decoration: none;
+      color: black;
+    }
+
+    .notify-item:hover {
+      background: #ffc19f;
+    }
+
+    .notify-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .notify-content {
+      h4,
+      span {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        max-height: 50px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      h4{
+          font-weight: bold;
+      }
+
+      p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 0.75rem;
+      }
+    }
+  }
+
+  .direct-popover {
+    nb-popover {
+      span.arrow {
+        display: none;
+      }
+    }
+  }
+}

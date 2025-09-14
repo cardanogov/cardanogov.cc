@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- Disable common warnings for the entire solution -->
+    <NoWarn>$(NoWarn);IDE1006</NoWarn>
+    <!-- Disable nullable warnings if needed -->
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+</Project>

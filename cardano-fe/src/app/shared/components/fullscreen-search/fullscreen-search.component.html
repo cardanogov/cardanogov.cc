@@ -1,0 +1,258 @@
+<div class="search-container">
+  <button mat-raised-button (click)="openSearch()">
+    <mat-icon>search</mat-icon>
+  </button>
+  <div
+    class="fullscreen-search-overlay"
+    *ngIf="isSearchOpen"
+    (keydown)="onKeyDown($event)"
+  >
+    <div class="fullscreen-search-content">
+      <!-- Loading spinner -->
+      <div class="spinner-overlay" *ngIf="loading">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Header -->
+      <div class="search-header">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">Address</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item">Pool</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item">DRep</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item">Proposal</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item">Chart</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item">Committee</span>
+        </div>
+        <button mat-icon-button class="close-button" (click)="closeSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Search input -->
+      <div class="search-input-container">
+        <!-- <mat-form-field appearance="outline" class="search-field">
+          <input
+            matInput
+            (input)="onSearchInput($event)"
+            placeholder="Enter search term..."
+            autocomplete="off"
+            #searchInput
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field> -->
+        <form class="search-form">
+          <mat-form-field class="search-full-width">
+            <mat-label>Search</mat-label>
+            <input
+              (keydown.enter)="onSearchInput($event)"
+              #searchInput
+              autocomplete="off"
+              matInput
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </form>
+      </div>
+
+      <!-- Search results -->
+      <div class="search-results-container" *ngIf="searchQuery.length > 0">
+        <!-- Charts Section -->
+        <div
+          class="results-section"
+          *ngIf="searchResults.charts && searchResults.charts.length > 0 && !loading"
+        >
+          <div class="section-header">
+            <mat-icon class="section-icon">bar_chart</mat-icon>
+            <h2>Charts</h2>
+          </div>
+          <div class="charts-table">
+            <div class="table-header">
+              <div class="col-title">Chart Title</div>
+              <div class="col-url" data-label="URL"></div>
+            </div>
+            <div class="table-row" *ngFor="let result of searchResults.charts">
+              <div class="col-title">{{ result.title }}</div>
+              <div class="col-url">
+                <a matButton="filled" [href]="result.url">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proposals Section -->
+        <div
+          class="results-section"
+          *ngIf="searchResults.proposals && searchResults.proposals.length > 0 && !loading"
+        >
+          <div class="section-header">
+            <mat-icon class="section-icon">account_balance</mat-icon>
+            <h2>Proposals</h2>
+          </div>
+          <div class="proposals-table">
+            <div class="table-header">
+              <div class="col-proposal" data-label="Proposal">Proposal</div>
+              <div class="col-type" data-label="Type">Type</div>
+              <div class="col-yes" data-label="Yes">Yes</div>
+              <div class="col-no" data-label="No">No</div>
+              <div class="col-abstain" data-label="Abstain">Abstain</div>
+              <div class="col-url" data-label="URL"></div>
+            </div>
+            <div
+              class="table-row"
+              *ngFor="let result of searchResults.proposals"
+            >
+              <div class="col-proposal">
+                <div class="proposal-info">
+                  <div class="proposal-title">{{ result.title }}</div>
+                  <div class="proposal-id">{{ result.id }}</div>
+                </div>
+              </div>
+              <div class="col-type">{{ result.type }}</div>
+              <div class="col-yes">₳{{ formatValue(result.yes || 0) }}</div>
+              <div class="col-no">₳{{ formatValue(result.no || 0) }}</div>
+              <div class="col-abstain">₳{{ formatValue(result.abstain || 0) }}</div>
+              <div class="col-url">
+                <a matButton="filled" [href]="result.url">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DReps Section -->
+        <div
+          class="results-section"
+          *ngIf="searchResults.dreps && searchResults.dreps.length > 0 && !loading"
+        >
+          <div class="section-header">
+            <mat-icon class="section-icon">group</mat-icon>
+            <h2>DReps</h2>
+          </div>
+          <div class="dreps-table">
+            <div class="table-header">
+              <div class="col-drep" data-label="DRep">DRep</div>
+              <div class="col-delegator" data-label="Delegators">
+                Delegators
+              </div>
+              <div class="col-stake" data-label="Live Stake">Live Stake</div>
+              <div class="col-url" data-label="URL"></div>
+            </div>
+            <div class="table-row" *ngFor="let result of searchResults.dreps">
+              <div class="col-drep">
+                <div class="drep-info">
+                  <div class="drep-title">{{ result.title }}</div>
+                  <div class="drep-id">{{ result.id }}</div>
+                </div>
+              </div>
+              <div class="col-delegator">
+                {{ formatValue(result.delegator || 0) }}
+              </div>
+              <div class="col-stake">₳{{ formatValue(result.live_stake || 0) }}</div>
+              <div class="col-url">
+                <a matButton="filled" [href]="result.url">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pools Section -->
+        <div
+          class="results-section"
+          *ngIf="searchResults.pools && searchResults.pools.length > 0 && !loading"
+        >
+          <div class="section-header">
+            <mat-icon class="section-icon">pool</mat-icon>
+            <h2>Pools</h2>
+          </div>
+          <div class="pools-table">
+            <div class="table-header">
+              <div class="col-pool" data-label="Pool">Pool</div>
+              <div class="col-stake" data-label="Live Stake">Live Stake</div>
+              <div class="col-margin" data-label="Margin">Margin</div>
+              <div class="col-cost" data-label="Fixed Cost">Fixed Cost</div>
+              <div class="col-pledge" data-label="Pledge">Pledge</div>
+              <div class="col-url" data-label="URL"></div>
+            </div>
+            <div class="table-row" *ngFor="let result of searchResults.pools">
+              <div class="col-pool">
+                <div class="pool-info">
+                  <div class="pool-details">
+                    <div class="pool-title">{{ result.title }}</div>
+                    <div class="pool-id">{{ result.id }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-stake">₳{{ formatValue(result.live_stake || 0) }}</div>
+              <div class="col-margin">
+                {{ result.margin | percent : "1.2-2" }}
+              </div>
+              <div class="col-cost">₳{{ formatValue(result.fixed_cost || 0) }}</div>
+              <div class="col-pledge">₳{{ formatValue(result.pledge || 0) }}</div>
+              <div class="col-url">
+                <a matButton="filled" [href]="result.url">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CCs Section -->
+        <div
+          class="results-section"
+          *ngIf="searchResults.ccs && searchResults.ccs.length > 0 && !loading"
+        >
+          <div class="section-header">
+            <mat-icon class="section-icon">groups</mat-icon>
+            <h2>Committee Members</h2>
+          </div>
+          <div class="ccs-table">
+            <div class="table-header">
+              <div class="col-title">Member</div>
+              <div class="col-url" data-label="URL"></div>
+            </div>
+            <div class="table-row" *ngFor="let result of searchResults.ccs">
+              <div class="col-title">
+                <div class="cc-info">
+                  <div class="cc-title">{{ result.title }}</div>
+                  <div class="cc-id">{{ result.id }}</div>
+                </div>
+              </div>
+              <div class="col-url">
+                <a matButton="filled" [href]="result.url">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No results -->
+        <div
+          class="no-results"
+          *ngIf="
+            searchResults.pools?.length === 0 &&
+            searchResults.ccs?.length === 0 &&
+            searchResults.charts?.length === 0 &&
+            searchResults.dreps?.length === 0 &&
+            searchResults.proposals?.length === 0 &&
+            searchQuery.length > 0 &&
+            !loading
+          "
+        >
+          <mat-icon>search_off</mat-icon>
+          <p>No results found for "{{ searchQuery }}"</p>
+        </div>
+      </div>
+
+      <!-- Placeholder -->
+      <div class="search-placeholder" *ngIf="searchQuery.length === 0">
+        <mat-icon class="placeholder-icon">search</mat-icon>
+        <p>
+          Search for pools, proposals, DReps, committee members, charts, and
+          more...
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

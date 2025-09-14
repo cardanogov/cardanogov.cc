@@ -1,0 +1,387 @@
+<div class="container-fluid">
+	<!-- Pool Info Card -->
+	<div class="row g-4">
+		<ng-container *ngIf="!isLoading; else loadingCards">
+			<!-- <div class="col-12 col-md-4">
+				<div class="stat-card h-100">
+					<img [src]="cardData?.image ?? 'assets/icons/account-icon.svg'" alt="Pool Icon" />
+					<div class="stat-card-body">
+						<h6 class="stat-title">{{ cardData?.givenName }}</h6>
+						<h6 class="stat-value"><span>{{ drepInfo?.hex }}</span><nb-icon icon="copy-outline" (click)="copyToClipboard(drepInfo?.hex)" pack="eva"
+								class="icon"></nb-icon></h6>
+						<h6 class="stat-value"><span>
+								{{ drepInfo?.drep_id }}</span><nb-icon icon="copy-outline" (click)="copyToClipboard(drepInfo?.drep_id)" pack="eva"
+								class="icon"></nb-icon></h6>
+					</div>
+				</div>
+			</div> -->
+
+			<!-- Voting Power Card -->
+			<!-- <div class="col-12 col-md-4">
+				<div class="stat-card h-100">
+					<div class="stat-card-body">
+						<h6 class="stat-title">Voting power</h6>
+					</div>
+					<div class="value-container">
+						<h6>₳ {{ (cardData?.votingPower ?? 0) | number:'1.0-0' }}</h6>
+						<div class="change-badge">
+							<span [ngClass]="{ 'positive': (cardData?.votingPowerChange ?? 0) >= 0, 'negative': (cardData?.votingPowerChange ?? 0) < 0 }">
+							  {{ (cardData?.votingPowerChange ?? 0) > 0 ? '+' : '' }}{{ (cardData?.votingPowerChange ?? 0).toFixed(2) }}%
+							</span>
+							Since last epoch
+						</div>
+					</div>
+				</div>
+			</div> -->
+
+			<!-- Status Card -->
+			<!-- <div class="col-12 col-md-4">
+				<div class="stat-card h-100">
+					<div class="stat-card-body">
+						<h6 class="stat-title">Status</h6>
+						<div
+							class="stat-status"
+							[ngClass]="{
+								active: drepInfo?.active,
+								inactive: !drepInfo?.active
+							}"
+							>
+							{{ drepInfo?.active ? 'Active' : 'Inactive' }}
+					  </div>
+					</div>
+					<div class="value-container">
+						<h5 *ngIf="cardData?.registrationDate">Registration: {{ cardData?.registrationDate != "" ? (cardData?.registrationDate | date : "dd/MM/yyyy" : "UTC") : "N/A" }}</h5>
+						<h5 *ngIf="activeUntil">Active Until: {{ activeUntil ? (activeUntil | date : "dd/MM/yyyy" : "UTC") : "N/A"}}</h5>
+					</div>
+				</div>
+			</div> -->
+
+			<div class="drep-card">
+				<div class="logo-container">
+					<img [src]="cardData?.image ?? 'assets/icons/account-icon.svg'" alt="Drep Icon" />
+				</div>
+				<div class="card-content">
+					<div class="header">
+						<div class="title mb-2">{{ cardData?.givenName }}</div>
+						<div class="address-container">
+							<div class="address">{{ truncateMiddle(drepInfo?.drep_id) }}</div>
+							<nb-icon icon='copy-outline' pack='eva' (click)="copyToClipboard(drepInfo?.drep_id)"></nb-icon>
+						</div>
+					</div>
+					<div class="stats">
+						<div class="stat-item">
+							<div class="icon-container">
+								<img src="assets/icons/cc/group-icon.svg" alt="Members" />
+							</div>
+							<div class="value-container">
+								<div class="value">
+									<ng-container *ngIf="cardData?.ref?.length; else noContact">
+										<ng-container *ngFor="let ref of (cardData?.ref | slice:0:1)">
+											<ng-container [ngSwitch]="getReferenceType(ref)">
+												<a *ngSwitchCase="'Twitter'" [href]="ref.uri" target="_blank" class="reference-link">
+													<nb-icon icon="twitter-outline" pack="eva"></nb-icon>
+												</a>
+												<a *ngSwitchCase="'Github'" [href]="ref.uri" target="_blank" class="reference-link">
+													<nb-icon icon="github-outline" pack="eva"></nb-icon>
+												</a>
+												<a *ngSwitchCase="'Telegram'" [href]="ref.uri" target="_blank" class="reference-link">
+													<img src="../../../assets/icons/telegram-icon.svg" alt="Telegram Icon" />
+												</a>
+												<a *ngSwitchCase="'Discord'" [href]="ref.uri" target="_blank" class="reference-link">
+													<img src="../../../assets/icons/discord-icon.svg" alt="Discord Icon" />
+												</a>
+												<a *ngSwitchCase="'Youtube'" [href]="ref.uri" target="_blank" class="reference-link">
+													<img src="../../../assets/icons/youtube-icon.svg" alt="Youtube Icon" />
+												</a>
+												<a *ngSwitchCase="'Linkedin'" [href]="ref.uri" target="_blank" class="reference-link">
+													<img src="../../../assets/icons/linkedin-icon.svg" alt="Linkedin Icon" />
+												</a>
+												<a *ngSwitchCase="'Linktree'" [href]="ref.uri" target="_blank" class="reference-link">
+													<img src="../../../assets/icons/linktree-icon.svg" alt="Linktree Icon" />
+												</a>
+												<a *ngSwitchDefault [href]="ref.uri" target="_blank" class="reference-link">
+													<nb-icon icon="globe-outline" pack="eva"></nb-icon>
+												</a>
+											</ng-container>
+										</ng-container>
+									</ng-container>
+									<ng-template #noContact>N/A</ng-template>
+								</div>
+								<div class="label">
+									Contact
+								</div>
+							</div>
+						</div>
+						<div class="stat-item">
+							<div class="icon-container">
+								<img src="assets/icons/cc/vote-icon.svg" alt="Times voted" />
+							</div>
+							<div class="value-container">
+								<div class="value">{{ voteTotalItems }}</div>
+								<div class="label">
+									Times voted
+								</div>
+							</div>
+						</div>
+						<div class="stat-item">
+							<div class="icon-container">
+								<img src="assets/icons/cc/arm-icon.svg" alt="Voting power" />
+							</div>
+							<div class="value-container">
+								<div class="value">{{ formatValue(cardData?.votingPower) }}</div>
+								<div class="label">Voting power</div>
+							</div>
+						</div>
+						<div class="stat-item">
+							<div class="icon-container">
+								<img src="assets/icons/cc/group-icon.svg" alt="Times voted" />
+							</div>
+							<div class="value-container">
+								<div class="value">{{ delegationTotalItems }}</div>
+								<div class="label">
+									Delegators
+								</div>
+							</div>
+						</div>
+						<div class="stat-item">
+							<div class="icon-container">
+								<img src="assets/icons/cc/target-icon.svg" alt="Trust" />
+							</div>
+							<div class="value-container">
+								<div class="value">{{ drepInfo?.active ? 'Active' : 'Inactive' }}</div>
+								<div class="label">Status</div>
+							</div>
+						</div>
+					</div>
+					<div class="tenure">
+						<div class="tenure-header">
+							<div class="label">Active</div>
+						</div>
+						<div class="tenure-header">
+							<div class="top-label">{{ registrationDate ? cardData?.registrationDate : 'N/A' }}</div>
+							<div class="end-date">{{ activeUntilDate ? formatDate(activeUntilDate.toISOString()) : 'N/A' }}</div>
+						</div>
+						<div class="progress-bar">
+							<div class="progress" [ngStyle]="{ width: tenureProgressPercent + '%', background: '#ffe600' }"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</ng-container>
+
+		<ng-template #loadingCards>
+			<div class="col-12 col-md-4">
+				<app-card-skeleton height="200px"></app-card-skeleton>
+			</div>
+			<div class="col-12 col-md-4">
+				<app-card-skeleton height="200px"></app-card-skeleton>
+			</div>
+			<div class="col-12 col-md-4">
+				<app-card-skeleton height="200px"></app-card-skeleton>
+			</div>
+		</ng-template>
+	</div>
+
+	<!-- Second Row -->
+	<div class="second-row row g-4 mt-4">
+		<div class="col-12 col-md-6 col-lg-4">
+			<ng-container *ngIf="!isLoading; else loadingInfoCard">
+				<nb-card>
+					<nb-card-header>
+						<div class="header-container d-flex justify-content-between align-items-center">
+							<div class="header-main d-flex justify-content-between align-items-center">
+								<div class="d-flex align-items-center">
+									<img src="assets/icons/logo.png" alt="Cardano Logo" class="logo">
+									<span>Info</span>
+								</div>
+							</div>
+							<div class="icon-container">
+                <div *ngIf="cardData?.references?.length" class="d-flex align-items-center position-relative">
+                  <!-- Show visible references -->
+                  <div *ngFor="let ref of visibleReferences">
+                    <ng-container [ngSwitch]="getReferenceType(ref)">
+                      <a *ngSwitchCase="'Twitter'" [href]="ref.uri" target="_blank" class="reference-link">
+                        <nb-icon icon="twitter-outline" pack="eva"></nb-icon>
+                      </a>
+                      <a *ngSwitchCase="'Github'" [href]="ref.uri" target="_blank" class="reference-link">
+                        <nb-icon icon="github-outline" pack="eva"></nb-icon>
+                      </a>
+                      <a *ngSwitchCase="'Telegram'" [href]="ref.uri" target="_blank" class="reference-link">
+                        <img src="../../../assets/icons/telegram-icon.svg" alt="Telegram Icon" />
+                      </a>
+                      <a *ngSwitchCase="'Discord'" [href]="ref.uri" target="_blank" class="reference-link">
+                        <img src="../../../assets/icons/discord-icon.svg" alt="Discord Icon" />
+                      </a>
+                      <a *ngSwitchCase="'Youtube'" [href]="ref.uri" target="_blank" class="reference-link">
+                        <img src="../../../assets/icons/youtube-icon.svg" alt="Youtube Icon" />
+                      </a>
+                      <a *ngSwitchCase="'Linkedin'" [href]="ref.uri" target="_blank" class="reference-link">
+                        <img src="../../../assets/icons/linkedin-icon.svg" alt="Linkedin Icon" />
+                      </a>
+                      <a *ngSwitchCase="'Linktree'" [href]="ref.uri" target="_blank" class="reference-link">
+                        <img src="../../../assets/icons/linktree-icon.svg" alt="Linktree Icon" />
+                      </a>
+                      <a *ngSwitchDefault [href]="ref.uri" target="_blank" class="reference-link">
+                        <nb-icon icon="globe-outline" pack="eva"></nb-icon>
+                      </a>
+                    </ng-container>
+                  </div>
+                  <!-- Funnel/More icon if overflow -->
+                  <ng-container *ngIf="overflowReferences.length">
+                    <a (click)="toggleShowAllReferences()" class="reference-link" style="cursor:pointer;">
+                      <nb-icon icon="funnel-outline" pack="eva"></nb-icon>
+                    </a>
+                    <!-- Dropdown for overflow -->
+                    <div *ngIf="showAllReferences" class="reference-overflow-dropdown">
+                      <div *ngFor="let ref of overflowReferences">
+                        <ng-container [ngSwitch]="getReferenceType(ref)">
+                          <a *ngSwitchCase="'Twitter'" [href]="ref.uri" target="_blank" class="reference-link">
+                            <nb-icon icon="twitter-outline" pack="eva"></nb-icon>
+                          </a>
+                          <a *ngSwitchCase="'Github'" [href]="ref.uri" target="_blank" class="reference-link">
+                            <nb-icon icon="github-outline" pack="eva"></nb-icon>
+                          </a>
+                          <a *ngSwitchCase="'Telegram'" [href]="ref.uri" target="_blank" class="reference-link">
+                            <img src="../../../assets/icons/telegram-icon.svg" alt="Telegram Icon" />
+                          </a>
+                          <a *ngSwitchCase="'Discord'" [href]="ref.uri" target="_blank" class="reference-link">
+                            <img src="../../../assets/icons/discord-icon.svg" alt="Discord Icon" />
+                          </a>
+                          <a *ngSwitchCase="'Youtube'" [href]="ref.uri" target="_blank" class="reference-link">
+                            <img src="../../../assets/icons/youtube-icon.svg" alt="Youtube Icon" />
+                          </a>
+                          <a *ngSwitchCase="'Linkedin'" [href]="ref.uri" target="_blank" class="reference-link">
+                            <img src="../../../assets/icons/linkedin-icon.svg" alt="Linkedin Icon" />
+                          </a>
+                          <a *ngSwitchCase="'Linktree'" [href]="ref.uri" target="_blank" class="reference-link">
+                            <img src="../../../assets/icons/linktree-icon.svg" alt="Linktree Icon" />
+                          </a>
+                          <a *ngSwitchDefault [href]="ref.uri" target="_blank" class="reference-link">
+                            <nb-icon icon="globe-outline" pack="eva"></nb-icon>
+                          </a>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+								<img *ngIf="cardData?.objectives && cardData?.motivations && cardData?.qualifications" (click)="onInfoExpand()" src="../../../assets/icons/expand-simple.svg" alt="Expand Icon" />
+							</div>
+						</div>
+					</nb-card-header>
+
+					<nb-card-body>
+						<div class="table-responsive" *ngIf="cardData?.objectives || cardData?.motivations || cardData?.qualifications">
+							<h6>Objectives</h6>
+							<p class="truncate-3-lines">{{ cardData?.objectives }}</p>
+
+							<h6>Motivations</h6>
+							<p class="truncate-3-lines">{{ cardData?.motivations }}</p>
+
+							<h6>Qualifications</h6>
+							<p class="truncate-3-lines">{{ cardData?.qualifications }}</p>
+						</div>
+						<div *ngIf="!cardData?.objectives && !cardData?.motivations && !cardData?.qualifications">
+							<p>No information available</p>
+						</div>
+					</nb-card-body>
+				</nb-card>
+			</ng-container>
+			<ng-template #loadingInfoCard>
+				<app-card-skeleton height="300px"></app-card-skeleton>
+			</ng-template>
+		</div>
+
+		<div class="chart-container col-12 col-md-6 col-lg-8">
+			<div class="chart-wrapper">
+				<ng-container *ngIf="!isLoading; else loadingChart">
+					<app-chart title="Voting Power" (expand)="
+						openModal(
+							'votingPowerChart',
+							'Voting Power History'
+						)">
+						<canvas #votingPowerChart></canvas>
+					</app-chart>
+				</ng-container>
+				<ng-template #loadingChart>
+					<app-chart-skeleton></app-chart-skeleton>
+				</ng-template>
+			</div>
+		</div>
+	</div>
+
+	<!-- Third Row -->
+	<div class="third-row row g-4 mt-4">
+		<div class="col-12 col-md-6">
+			<ng-container class="mb-4" *ngIf="isLoading; else tableContent">
+				<app-table-skeleton></app-table-skeleton>
+			</ng-container>
+			<ng-template #tableContent>
+				<div class="mb-4">
+					<app-table
+						title="Votes info"
+						[showSearch]="false"
+						[columns]="voteInfoColumns"
+						[data]="paginatedVoteData"
+						[totalItems]="voteTotalItems"
+						[currentPage]="voteCurrentPage"
+						[itemsPerPage]="itemsPerPage"
+						[showPagination]="true"
+						(pageChange)="onPageChange($event, 'vote')"
+						fixedHeight="482px"
+						[showExpanded]="true"
+						(expand)="onVotesInfoExpand()"
+					>
+						<ng-container *ngIf="!paginatedVoteData?.length && !isLoading">
+							<div class="no-data-message">No vote data available</div>
+						</ng-container>
+					</app-table>
+				</div>
+			</ng-template>
+
+      <ng-container class="mb-4" *ngIf="isLoading; else registrationTableContent">
+        <app-table-skeleton></app-table-skeleton>
+      </ng-container>
+      <ng-template #registrationTableContent>
+        <app-table
+          title="Registration"
+          [showSearch]="false"
+          [columns]="registrationColumns"
+          [data]="paginatedRegistrationData"
+          [totalItems]="registrationTotalItems"
+          [currentPage]="registrationCurrentPage"
+          [itemsPerPage]="itemsPerPage"
+          (pageChange)="onPageChange($event, 'registration')"
+					fixedHeight="482px"
+					[showExpanded]="true"
+					(expand)="onRegistrationExpand()"
+				>
+		</app-table>
+      </ng-template>
+		</div>
+
+		<div class="col-12 col-md-6">
+			<ng-container class="mb-4" *ngIf="isLoading; else delegationTableContent">
+				<app-table-skeleton></app-table-skeleton>
+			</ng-container>
+			<ng-template #delegationTableContent>
+				<app-table
+					title="Delegation"
+					[showSearch]="false"
+					[columns]="delegationColumns"
+					[data]="paginatedDelegationData"
+					[totalItems]="delegationTotalItems"
+					[currentPage]="delegationCurrentPage"
+					[itemsPerPage]="delegationItemsPerPage"
+					(pageChange)="onPageChange($event, 'delegation')"
+					[showText]="true"
+					[subTitle]="'Delegators ' + delegationTotalItems"
+					fixedHeight="988px"
+					[showExpanded]="true"
+					(expand)="onDelegationExpand()"
+					[amountSort]="delegationAmountSort"
+					[onAmountSort]="onAmountSort.bind(this)">
+				</app-table>
+			</ng-template>
+		</div>
+	</div>
+</div>

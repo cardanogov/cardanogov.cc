@@ -1,0 +1,55 @@
+@use "./theme.scss";
+@use "@nebular/theme/styles/globals" as nebular;
+@use "tailwindcss/base" as *;
+@use "tailwindcss/components" as *;
+@use "tailwindcss/utilities" as *;
+@use "app/styles/tailwind.scss" as *;
+@use "bootstrap/scss/bootstrap" as *;
+
+@include nebular.nb-theme-global();
+
+.nb-theme-corporate
+  nb-layout
+  .layout
+  .layout-container
+  nb-sidebar
+  .main-container-fixed {
+  top: 0;
+}
+
+/* Dark mode for header */
+nb-layout-header {
+  background-color: #333438 !important; /* Dark gray/black */
+  color: #ffffff !important; /* White text */
+}
+
+/* Dark mode for sidebar */
+nb-sidebar {
+  background-color: #333438 !important; /* Slightly lighter dark */
+  color: #ffffff !important;
+
+  /* Ensure menu items in sidebar are readable */
+  .menu-item a {
+    color: #ffffff !important;
+  }
+  .menu-item a:hover {
+    color: #0086ad !important; /* Hover effect */
+  }
+}
+
+nb-menu {
+  a {
+    nb-icon,
+    .menu-title {
+      color: white !important;
+    }
+    &:hover,
+    &:active {
+      nb-icon,
+      .menu-title {
+        color: #0086AD !important;
+      }
+    }
+  }
+}
+

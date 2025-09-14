@@ -1,0 +1,380 @@
+<div class="card-container">
+  <div class="menu-card pt-2">
+    <ng-template #cardContent>
+      <app-card
+        class="d-flex"
+        title="Total Govermance Actions"
+        [value]="
+          (governanceAction.total_proposals || 0)
+        "
+        [iconImg]="'governance-icon.svg'"
+        [showChange]="true"
+        [percentageChange]="differenceEpoch"
+        [isPositive]="true"
+      >
+      </app-card>
+
+      <app-card
+        class="d-flex"
+        title="Approved Govermance Actions"
+        [value]="governanceAction.approved_proposals || 0"
+        [icon]="'document-icon.svg'"
+      >
+      </app-card>
+
+      <app-card
+        class="d-flex"
+        title="Active Govermance Actions"
+        [value]="proposalLiveInfo.length"
+        [iconImg]="'live-icon.png'"
+      >
+      </app-card>
+
+      <app-card
+        class="d-flex"
+        title="Participate in voting"
+        [iconImg]="'vote-icon.svg'"
+        [showButton]="true"
+        (buttonClick)="onVotingClick()"
+      >
+      </app-card>
+    </ng-template>
+
+    <ng-container *ngIf="isLoadingCard; else cardContent">
+      <div
+        class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr"
+      >
+        <app-card-skeleton
+          class="h-full"
+          height="100%"
+          *ngFor="let i of [1, 2, 3, 4]"
+        ></app-card-skeleton>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="live-proposal-container">
+    <div
+      *ngIf="!isLoadingProposalLive && proposalLiveInfo.length > 1"
+      class="center-container slider-3d col-12 mt-4 pt-3"
+    >
+      <button class="slider-btn prev" (click)="prevSlide()">
+        <nb-icon icon="chevron-left-outline" pack="eva"></nb-icon>
+      </button>
+      <div class="slider-track">
+        <div
+          *ngFor="let action of proposalLiveInfo; let i = index"
+          class="governance-card"
+          [ngClass]="{
+            prev: i === getPrevIndex(),
+            active: i === currentSlide,
+            next: i === getNextIndex(),
+            blur: i === getPrevIndex() || i === getNextIndex(),
+            hidden:
+              i !== currentSlide && i !== getPrevIndex() && i !== getNextIndex()
+          }"
+        >
+          <div class="header">Governance Actions</div>
+          <div class="content">
+            <div class="image-container">
+              <img
+                [src]="action.imageUrl || 'assets/images/logo-big.png'"
+                alt="Proposal Image"
+              />
+            </div>
+            <div class="details">
+              <div class="title">{{ action.title }}</div>
+              <span class="detail-title">Governance Action Type:</span>
+              <div class="tag">{{ action.proposalType }}</div>
+              <span class="detail-title">Abstract:</span>
+              <div class="abstract">{{ action.abstract_ }}</div>
+            </div>
+          </div>
+
+          <div class="border-black"></div>
+
+          <div class="progress-bars">
+            <div class="progress-item">
+              <div class="status-container">
+                <div>DReps: {{ action.drepYesPct }}%</div>
+                 <div class="status" [ngClass]="action.status">
+                  <ng-container [ngSwitch]="action.status">
+                    <!-- Active -->
+                    <ng-container *ngSwitchCase="'Active'">
+                      <nb-icon icon="clock-outline" pack="eva"></nb-icon>
+                      {{ action.time }}
+                    </ng-container>
+
+                    <!-- Enacted -->
+                    <ng-container *ngSwitchCase="'Enacted'">
+                      <span class="dot enacted"></span>
+                      Enacted
+                    </ng-container>
+
+                    <!-- Enacted -->
+                    <ng-container *ngSwitchCase="'Ratified'">
+                      <span class="dot ratified"></span>
+                      Ratified
+                    </ng-container>
+
+                    <!-- Expired -->
+                    <ng-container *ngSwitchCase="'Expired'">
+                      <span class="dot expired"></span>
+                      Expired
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="bar">
+                <div class="fill" [style.width.%]="action.drepYesPct"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              SPO: {{ action.poolYesPct }}%
+              <div class="bar">
+                <div class="fill" [style.width.%]="action.poolYesPct"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              CC: {{ action.committeeYesPct }}%
+              <div class="bar">
+                <div
+                  class="fill"
+                  [style.width.%]="action.committeeYesPct"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <button
+            class="view-details-btn"
+            (click)="onViewDetails(action.proposalId || '', true)"
+          >
+            View details
+          </button>
+        </div>
+      </div>
+      <button class="slider-btn next" (click)="nextSlide()">
+        <nb-icon icon="chevron-right-outline" pack="eva"></nb-icon>
+      </button>
+    </div>
+    <div
+      *ngIf="!isLoadingProposalLive && proposalLiveInfo.length === 1"
+      class="col-12 mt-4 pt-3 d-flex justify-content-center"
+    >
+      <div class="governance-card single-item-card">
+        <div class="header">Governance Actions</div>
+        <div class="content">
+          <div class="image-container">
+            <img [src]="proposalLiveInfo[0].imageUrl" alt="Proposal Image" />
+          </div>
+          <div class="details">
+            <div class="title">
+              {{ proposalLiveInfo[0].title }}
+            </div>
+            <span class="detail-title">Governance Action Type:</span>
+            <div class="tag">
+              {{ proposalLiveInfo[0].proposalType }}
+            </div>
+            <span class="detail-title">Abstract:</span>
+            <div class="abstract">
+              {{ proposalLiveInfo[0].abstract_ }}
+            </div>
+          </div>
+        </div>
+
+        <div class="border-black"></div>
+
+        <div class="progress-bars">
+          <div class="progress-item">
+            <div class="status-container">
+              <div>DReps: {{ proposalLiveInfo[0].drepYesPct }}%</div>
+              <div class="status">
+                <nb-icon icon="clock-outline" pack="eva"></nb-icon>
+                {{ proposalLiveInfo[0].time }}
+              </div>
+            </div>
+            <div class="bar">
+              <div
+                class="fill"
+                [style.width.%]="proposalLiveInfo[0].drepYesPct"
+              ></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            SPO: {{ proposalLiveInfo[0].poolYesPct }}%
+            <div class="bar">
+              <div
+                class="fill"
+                [style.width.%]="proposalLiveInfo[0].poolYesPct"
+              ></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            CC: {{ proposalLiveInfo[0].committeeYesPct }}%
+            <div class="bar">
+              <div
+                class="fill"
+                [style.width.%]="proposalLiveInfo[0].committeeYesPct"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="view-details-btn"
+          (click)="onViewDetails(proposalLiveInfo[0].proposalId || '', true)"
+        >
+          View details
+        </button>
+      </div>
+    </div>
+    <div
+      *ngIf="!isLoadingProposalLive && proposalLiveInfo.length === 0"
+      class="governance-card no-proposals min-h-[400px] flex items-center justify-center mt-8 pt-3"
+    >
+      <img
+        src="assets/images/logo-big.png"
+        alt="Cardano Logo"
+        class="logo w-full h-full max-h-[400px] max-w-[400px]"
+      />
+    </div>
+    <div *ngIf="isLoadingProposalLive" class="col-12 mt-4 pt-3">
+      <app-card-skeleton height="600px"></app-card-skeleton>
+    </div>
+  </div>
+  <div class="row mt-5 md:mt-4">
+    <div
+      *ngIf="!isLoadingExpiredProposal"
+      class="col-6 col-sm-8 col-md-10-custom mb-3 mb-md-0"
+    >
+      <app-carousel-tag [items]="lstProposalType">
+        <ng-template #template let-item>
+          <div
+            class="custom-item"
+            [class.active]="selectedProposalType === item.key"
+            (click)="filterProposal(item.key)"
+          >
+            <span class="id">{{ formatKey(item.key) }}</span>
+            <span class="value">{{ getFilteredCount(item.key) }}</span>
+          </div>
+        </ng-template>
+      </app-carousel-tag>
+    </div>
+    <div
+      *ngIf="isLoadingExpiredProposal"
+      class="col-6 col-sm-8 col-md-10 mb-3 mb-md-0"
+    >
+      <app-card-skeleton class="h-full" height="100%"></app-card-skeleton>
+    </div>
+    <div
+      class="col-6 col-sm-4 col-md-2-custom d-flex justify-content-center align-items-center mb-3 mb-md-0"
+    >
+      <input
+        nbInput
+        type="text"
+        class="form-control"
+        placeholder="Search..."
+        [(ngModel)]="searchText"
+        (keydown.enter)="onSearch()"
+        (input)="onSearchInput()"
+      />
+    </div>
+  </div>
+  <div class="mt-4">
+    <div class="row g-4" *ngIf="!isLoadingExpiredProposal">
+      <!-- Card Item -->
+      <div
+        class="col-12 col-sm-6 col-lg-4"
+        *ngFor="let item of displayedProposals"
+      >
+        <div class="governance-card h-100">
+          <div class="content">
+            <div class="image-card">
+              <img [src]="item.imageUrl" alt="Proposal Image" />
+            </div>
+            <div class="details">
+              <div class="title">{{ item.title }}</div>
+              <span class="detail-title">Governance Action Type:</span>
+              <div class="tag">{{ item.proposalType }}</div>
+              <span class="detail-title">Abstract:</span>
+              <div class="abstract">{{ item.abstract_ }}</div>
+            </div>
+          </div>
+
+          <div class="border-black"></div>
+
+          <div class="progress-bars">
+            <div class="progress-item">
+              <div class="status-container">
+                <div>DReps: {{ item.drepYesPct }}%</div>
+                <div class="status" [ngClass]="item.status">
+                  <ng-container [ngSwitch]="item.status">
+                    <!-- Active -->
+                    <ng-container *ngSwitchCase="'Active'">
+                      <nb-icon icon="clock-outline" pack="eva"></nb-icon>
+                      {{ item.time }}
+                    </ng-container>
+
+                    <!-- Enacted -->
+                    <ng-container *ngSwitchCase="'Enacted'">
+                      <span class="dot enacted"></span>
+                      Enacted
+                    </ng-container>
+
+                    <!-- Enacted -->
+                    <ng-container *ngSwitchCase="'Ratified'">
+                      <span class="dot ratified"></span>
+                      Ratified
+                    </ng-container>
+
+                    <!-- Expired -->
+                    <ng-container *ngSwitchCase="'Expired'">
+                      <span class="dot expired"></span>
+                      Expired
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="bar">
+                <div class="fill" [style.width.%]="item.drepYesPct"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              SPO: {{ item.poolYesPct }}%
+              <div class="bar">
+                <div class="fill" [style.width.%]="item.poolYesPct"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              CC: {{ item.committeeYesPct }}%
+              <div class="bar">
+                <div class="fill" [style.width.%]="item.committeeYesPct"></div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="view-details-btn"
+            (click)="onViewDetails(item.proposalId || '', false)"
+          >
+            View details
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoadingExpiredProposal">
+      <app-card-skeleton height="600px"></app-card-skeleton>
+    </div>
+
+    <!-- Load More Button -->
+    <div
+      class="text-center mt-4"
+      *ngIf="
+        (filteredProposals.proposal_info?.length || 0) >
+        displayedProposals.length
+      "
+    >
+      <button class="btn btn-primary" (click)="loadMore()">Load more</button>
+    </div>
+  </div>
+</div>

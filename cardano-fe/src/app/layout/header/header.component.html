@@ -1,0 +1,76 @@
+<div class="flex gap-2">
+  <nb-actions size="medium">
+    <nb-action [icon]="menuToggleIcon" (click)="toggle()"></nb-action>
+  </nb-actions>
+
+  <app-fullscreen-search></app-fullscreen-search>
+</div>
+<a href="/dashboard" class="hidden lg:block">
+  <img class="w-[60px] h-[60px] max-w-[unset]" [src]="logo" alt="Cardano GOV" />
+</a>
+<div class="header-right">
+  <nb-actions size="medium">
+    <nb-action>
+      <a href="https://x.com/cardanogov_cc" target="_blank">
+        <nb-icon icon="twitter"></nb-icon>
+      </a>
+    </nb-action>
+    <nb-action
+      icon="grid-outline"
+      nbPopoverTrigger="click"
+      [nbPopover]="direct"
+      nbPopoverClass="direct-popover"
+    >
+    </nb-action>
+    <nb-action
+      icon="bell-outline"
+      [badgeText]="unreadCount + ''"
+      badgeStatus="danger"
+      nbPopoverTrigger="click"
+      [nbPopover]="notify"
+      nbPopoverClass="direct-popover"
+    >
+    </nb-action>
+  </nb-actions>
+</div>
+
+<!-- <nb-icon
+  icon="menu"
+  class="text-white hover:text-[#0086AD] active:text-[#0086AD] block md:!hidden"
+  [nbContextMenu]="activityItems"
+></nb-icon> -->
+
+<ng-template #direct>
+  <div class="context-menu">
+    <div class="menu-grid">
+      <div *ngFor="let item of menuItems">
+        <a [href]="item.link" class="menu-item">
+          <img [src]="item.image" [alt]="item.title" class="menu-icon" />
+          <div class="menu-content">
+            <h4>{{ item.title }}</h4>
+            <p>{{ item.description }}</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #notify>
+  <div class="notify-menu">
+    <div *ngFor="let item of notifyItems">
+      <a [href]="item.link" class="notify-item" (click)="markAsRead(item.id)">
+        <img [src]="item.imageUrl" [alt]="item.title" class="notify-icon" />
+        <div class="notify-content">
+          <ng-container *ngIf="isRead(item.id); else unreadTitle">
+            <span>{{ item.title }}</span>
+          </ng-container>
+          <ng-template #unreadTitle>
+            <h4>{{ item.title }}</h4>
+          </ng-template>
+          <p>{{ item.timeline }}</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</ng-template>

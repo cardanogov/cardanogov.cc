@@ -1,0 +1,131 @@
+services:
+  # OPTION 1: All services running simultaneously (9GB total)
+  committeesync:
+    build:
+      context: .
+      dockerfile: Microservices/CommitteeSyncService/Dockerfile
+    container_name: committeesync
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_GCServer=0  # Use workstation GC (less memory)
+      - DOTNET_GCConcurrent=1
+      - DatabaseSync__MaxConcurrentDbOperations=2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "dotnet", "CommitteeSyncService.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./logs/committeesync:/app/Logs
+      - ./config/committeesync/appsettings.json:/app/appsettings.json
+
+  drepsync:
+    build:
+      context: .
+      dockerfile: Microservices/DrepSyncService/Dockerfile
+    container_name: drepsync
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_GCServer=0
+      - DOTNET_GCConcurrent=1
+      - DatabaseSync__MaxConcurrentDbOperations=2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "dotnet", "DrepSyncService.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./logs/drepsync:/app/Logs
+      - ./config/drepsync/appsettings.json:/app/appsettings.json
+
+  epochsync:
+    build:
+      context: .
+      dockerfile: Microservices/EpochSyncService/Dockerfile
+    container_name: epochsync
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_GCServer=0
+      - DOTNET_GCConcurrent=1
+      - DatabaseSync__MaxConcurrentDbOperations=2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "dotnet", "EpochSyncService.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./logs/epochsync:/app/Logs
+      - ./config/epochsync/appsettings.json:/app/appsettings.json
+
+  poolsync:
+    build:
+      context: .
+      dockerfile: Microservices/PoolSyncService/Dockerfile
+    container_name: poolsync
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_GCServer=0
+      - DOTNET_GCConcurrent=1
+      - DatabaseSync__MaxConcurrentDbOperations=2
+    restart: unless-stopped
+    volumes:
+      - ./logs/poolsync:/app/Logs
+      - ./config/poolsync/appsettings.json:/app/appsettings.json
+    healthcheck:
+      test: ["CMD", "dotnet", "PoolSyncService.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  proposalsync:
+    build:
+      context: .
+      dockerfile: Microservices/ProposalSyncService/Dockerfile
+    container_name: proposalsync
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_GCServer=0
+      - DOTNET_GCConcurrent=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "dotnet", "ProposalSyncService.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./logs/proposalsync:/app/Logs
+      - ./config/proposalsync/appsettings.json:/app/appsettings.json
+    deploy:
+      resources:
+        limits:
+          memory: 800M
+      restart_policy:
+        condition: on-failure
+
+  votingsync:
+    build:
+      context: .
+      dockerfile: Microservices/VotingSyncService/Dockerfile
+    container_name: votingsync
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_GCServer=0
+      - DOTNET_GCConcurrent=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "dotnet", "VotingSyncService.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./logs/votingsync:/app/Logs
+      - ./config/votingsync/appsettings.json:/app/appsettings.json

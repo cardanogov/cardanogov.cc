@@ -1,0 +1,510 @@
+<div class="container-fluid py-2">
+  <!-- CARD SECTION -->
+  <ng-container *ngIf="!isLoadingCards; else loadingCards">
+    <div class="card-container">
+      <!-- TOTAL DReps -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <div class="title-container">
+            <p class="title">Total DReps</p>
+            <div class="icon-container">
+              <img class="ml-2" src="assets/icons/drep-icon.svg" alt="Icon">
+            </div>
+          </div>
+          <p class="value">{{ drepCardData.dreps }}</p>
+          <div class="change-badge">
+            <span
+              [ngClass]="{
+                positive:
+                  drepCardData.drepsChange && +drepCardData.drepsChange >= 0,
+                negative:
+                  drepCardData.drepsChange && +drepCardData.drepsChange < 0
+              }"
+            >
+              {{
+                drepCardData.drepsChange && +drepCardData.drepsChange > 0
+                  ? "+"
+                  : ""
+              }}{{ drepCardData.drepsChange || 0 }}%
+            </span>
+            Since last epoch
+          </div>
+        </div>
+      </div>
+
+      <!-- TOTAL DELEGATORS -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <div class="title-container">
+            <p class="title">Total Delegators</p>
+            <div class="icon-container">
+              <nb-icon icon="person-add-outline" pack="eva"></nb-icon>
+            </div>
+          </div>
+          <p class="value">
+            {{ drepCardData.totalDelegatedDrep && drepCardData.totalDelegatedDrep.toLocaleString("de-DE") }}
+          </p>
+          <div class="change-badge">
+            <span
+              [ngClass]="{
+                positive:
+                  drepCardData.totalDelegatedDrepChange &&
+                  +drepCardData.totalDelegatedDrepChange >= 0,
+                negative:
+                  drepCardData.totalDelegatedDrepChange &&
+                  +drepCardData.totalDelegatedDrepChange < 0
+              }"
+            >
+              {{
+                drepCardData.totalDelegatedDrepChange &&
+                +drepCardData.totalDelegatedDrepChange > 0
+                  ? "+"
+                  : ""
+              }}{{ drepCardData.totalDelegatedDrepChange || "0" }}%
+            </span>
+            Since last epoch
+          </div>
+        </div>
+      </div>
+
+      <!-- TOTAL STAKED ADDRESSES -->
+      <div class="card">
+        <div class="d-flex flex-column">
+          <div class="title-container">
+            <p class="title">Live Stake</p>
+            <div class="icon-container">
+              <img
+                src="../../../assets/icons/coin-stacked.svg"
+                alt="Delegation Icon"
+                style="
+                  filter: invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg)
+                    brightness(93%) contrast(90%);
+                "
+              />
+            </div>
+          </div>
+          <p class="value">₳ {{ drepCardData.currentTotalActive }}B</p>
+          <div class="change-badge">
+            <span
+              [ngClass]="{
+                positive:
+                  drepCardData.totalActiveChange &&
+                  +drepCardData.totalActiveChange >= 0,
+                negative:
+                  drepCardData.totalActiveChange &&
+                  +drepCardData.totalActiveChange < 0
+              }"
+            >
+              {{
+                drepCardData.totalActiveChange &&
+                +drepCardData.totalActiveChange > 0
+                  ? "+"
+                  : ""
+              }}{{ drepCardData.totalActiveChange || "0" }}%
+            </span>
+            Since last epoch
+          </div>
+        </div>
+      </div>
+
+      <!-- DReps registration -->
+      <div class="card registration-card">
+        <div class="title-container">
+          <p class="title">DReps registration</p>
+          <div class="icon-container">
+            <img
+              src="../../../assets/icons/share-dots.svg"
+              alt="Registration Icon"
+              style="
+                filter: invert(41%) sepia(0%) saturate(0%) hue-rotate(180deg)
+                  brightness(93%) contrast(90%);
+              "
+            />
+          </div>
+        </div>
+        <button (click)="registration()" class="registration-button">
+          Register
+        </button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #loadingCards>
+    <div
+      class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr"
+    >
+      <app-card-skeleton
+        height="125px"
+        *ngFor="let i of [1, 2, 3, 4]"
+      ></app-card-skeleton>
+    </div>
+  </ng-template>
+
+  <!-- Second section -->
+  <div class="second-section mt-4">
+    <div class="grid-container">
+      <div class="chart-container">
+        <app-chart
+          title="DReps statistics"
+          (expand)="openModal('drepStatistics', 'DReps statistics')"
+        >
+          <canvas #drepStatistics></canvas>
+        </app-chart>
+      </div>
+
+      <div class="table-container">
+        <ng-container *ngIf="!isLoadingTable; else loadingTable">
+          <app-table
+            title="DRep Leaderboard"
+            [showSearch]="false"
+            [showPagination]="false"
+            [columns]="drepLeaderboardColumns"
+            [data]="drepLeaderboardData"
+            [subTitle]="
+              'Voting Power Percentage: ' + drepLeaderboardTotalPercentage + '%'
+            "
+            [showExpanded]="true"
+            (expand)="onLeaderboardExpand()"
+          >
+          </app-table>
+        </ng-container>
+        <ng-template #loadingTable>
+          <div class="table-loading">
+            <app-card-skeleton height="300px"></app-card-skeleton>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- third section -->
+  <div class="third-section mt-4">
+    <div class="grid-container">
+      <div class="chart-container">
+        <app-chart
+          title="DRep members"
+          (expand)="openModal('drepMembers', 'DRep members')"
+        >
+          <canvas #drepMembers></canvas>
+        </app-chart>
+      </div>
+      <div class="chart-container">
+        <app-chart
+          title="Delegate Addresses"
+          (expand)="openModal('delegateAddresses', 'Delegate Addresses')"
+        >
+          <canvas #delegateAddresses></canvas>
+        </app-chart>
+      </div>
+      <div class="chart-container">
+        <app-chart
+          title="DRep voting power"
+          (expand)="openModal('drepVotingPower', 'DRep voting power')"
+        >
+          <canvas #drepVotingPower></canvas>
+        </app-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marquee Section -->
+  <div class="marquee-section mt-4">
+    <div class="marquee-container">
+      <div class="marquee-content">
+        <div class="marquee-item" *ngFor="let item of repeatedDreps">
+          <div class="custom-item">
+            <span class="id">
+              <a
+                [routerLink]="['/dreps', item.drep_id]"
+                class="text-decoration-none text-primary"
+                >{{ truncateMiddle(item.drep_id || "") }}</a
+              >
+            </span>
+            <span class="value">
+              {{ (item.block_time ?? 0) | timeAgo }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fourth section -->
+  <div class="table-section mt-4">
+    <div class="table-header">
+      <div
+        class="d-flex flex-wrap justify-content-between align-items-center gap-4"
+      >
+        <!-- logo -->
+        <div class="logo-container d-flex align-items-center">
+          <img src="assets/images/Logo - remove background-2.png" alt="Icon" />
+          <h2 class="title ml-2">DRep List</h2>
+        </div>
+
+        <!-- action -->
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex gap-2 mb-sm-0">
+            <div class="d-flex gap-2 mb-sm-0">
+              <button
+                class="filter-button"
+                [class.active]="currentStatus === 'active'"
+                (click)="onStatusChange('active')"
+              >
+                Active
+              </button>
+              <button
+                class="filter-button"
+                [class.active]="currentStatus === 'inactive'"
+                (click)="onStatusChange('inactive')"
+              >
+                Inactive
+              </button>
+            </div>
+            <input
+              type="search"
+              class="search-input"
+              placeholder="Search Drep"
+              (keydown.enter)="onSearch($any($event.target).value)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="drep-grid">
+        <ng-container *ngIf="!isLoadingDrepList; else loadingDrepList">
+          <ng-container *ngFor="let drep of drepListData.drep_info">
+            <div class="drep-card">
+              <!-- Card Header -->
+              <div
+                class="d-flex justify-content-between align-items-start mb-4"
+              >
+                <div class="d-flex gap-3">
+                  <div class="avatar">
+                    <img [src]="drep.image || 'assets/icons/account-icon.svg'" alt="User Icon" />
+                  </div>
+                  <div>
+                    <h3 class="fs-6 m-0 text-truncate" style="max-width: 150px">
+                      {{ drep.name }}
+                    </h3>
+                    <div class="d-flex align-items-center gap-2 text-muted">
+                      <span style="max-width: 120px">{{
+                        truncateMiddle(drep.drep_id || "")
+                      }}</span>
+                      <nb-icon
+                        (click)="copyToClipboard(drep.drep_id || '')"
+                        class="cursor-pointer"
+                        icon="copy-outline"
+                        pack="eva"
+                      ></nb-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Stats -->
+              <div class="stats-grid mb-4">
+                <div class="stat-item">
+                  <div class="label">Times Voted</div>
+                  <div class="value mt-1">{{ drep.times_voted }}</div>
+                </div>
+                <div class="stat-item">
+                  <div class="label">Delegators</div>
+                  <div class="value mt-1">{{ drep.delegators || 0 }}</div>
+                </div>
+                <div class="stat-item">
+                  <div class="label">Voting power</div>
+                  <div class="value mt-1">
+                    ₳ {{ formatValue(drep.voting_power || 0) }}
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="label">Status</div>
+                  <div class="d-flex align-items-center gap-2">
+                    <div
+                      class="status-indicator"
+                      [ngClass]="{
+                        active: drep.status === 'Active',
+                        inactive: drep.status === 'Inactive'
+                      }"
+                    ></div>
+                    <span class="text-muted small">{{ drep.status }}</span>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="label">Active until</div>
+                  <div class="value mt-1">
+                    {{ formatDate(drep.active_until || "") }}
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="label">Contact</div>
+                  <div
+                    class="value mt-1"
+                    *ngIf="drep.contact && drep.contact.length === 0"
+                  >
+                    N/A
+                  </div>
+                  <div
+                    class="d-flex align-items-center gap-2"
+                    *ngIf="drep.contact && drep.contact.length > 0"
+                  >
+                    <div
+                      *ngFor="
+                        let ref of drep.contact ? drep.contact.slice(0, 3) : []
+                      "
+                    >
+                      <ng-container [ngSwitch]="getReferenceType(ref)">
+                        <a
+                          *ngSwitchCase="'Twitter'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <nb-icon icon="twitter" pack="eva"></nb-icon>
+                        </a>
+                        <a
+                          *ngSwitchCase="'Github'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <nb-icon icon="github" pack="eva"></nb-icon>
+                        </a>
+                        <a
+                          *ngSwitchCase="'Telegram'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/telegram-icon.svg"
+                            alt="Telegram Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Discord'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/discord-icon.svg"
+                            alt="Discord Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Youtube'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/youtube-icon.svg"
+                            alt="Youtube Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Linkedin'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/linkedin-icon.svg"
+                            alt="Linkedin Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Linktree'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <img
+                            src="../../../assets/icons/linktree-icon.svg"
+                            alt="Linktree Icon"
+                          />
+                        </a>
+                        <a
+                          *ngSwitchCase="'Website'"
+                          [href]="getUri(ref)"
+                          target="_blank"
+                          class="reference-link"
+                        >
+                          <nb-icon icon="globe-outline" pack="eva"></nb-icon>
+                        </a>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Footer -->
+              <button
+                class="view-profile-btn"
+                (click)="viewProfile(drep.drep_id || '')"
+              >
+                View Profile
+              </button>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-template #loadingDrepList>
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading DReps...</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Pagination -->
+      <div
+        class="pagination d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 gap-md-2 py-4"
+      >
+        <div class="d-flex align-items-center order-2 order-md-1 text-nowrap">
+          <span class="text-muted"
+            >Showing {{ startItem }} - {{ endItem }} of
+            {{ drepListData.total_dreps }} DReps</span
+          >
+        </div>
+
+        <div
+          class="d-flex align-items-center justify-content-center justify-content-md-end w-100 w-md-auto order-1 order-md-2"
+        >
+          <nb-icon
+            [class.disabled]="currentPage === 1"
+            class="cursor-pointer p-2"
+            icon="arrow-ios-back-outline"
+            pack="eva"
+            (click)="previousPage()"
+          >
+          </nb-icon>
+          <div class="d-flex gap-2 mx-3">
+            <ng-container *ngFor="let page of displayedPages">
+              <ng-container *ngIf="page === -1">
+                <button class="btn btn-sm disabled">...</button>
+              </ng-container>
+              <ng-container *ngIf="page !== -1">
+                <button
+                  class="btn btn-sm"
+                  [class.btn-primary]="page === currentPage"
+                  (click)="goToPage(page)"
+                >
+                  {{ page }}
+                </button>
+              </ng-container>
+            </ng-container>
+          </div>
+          <nb-icon
+            [class.disabled]="currentPage === totalPages"
+            class="cursor-pointer p-2"
+            icon="arrow-ios-forward-outline"
+            pack="eva"
+            (click)="nextPage()"
+          >
+          </nb-icon>
+        </div>
+      </div>
+    </div>
+    <!-- End Table Section -->
+  </div>
+</div>

@@ -1,0 +1,30 @@
+::ng-deep {
+  nb-sidebar.expanded {
+    width: 15rem !important;
+  }
+
+  nb-sidebar .main-container {
+    width: 15rem !important;
+    transition: opacity 0.3s ease-in-out, height 0.3s ease-in-out;
+    height: 100%; /* Full height when visible */
+    overflow: hidden; /* Prevent content overflow */
+  }
+
+  .nb-theme-corporate nb-sidebar.compacted{
+    display: none !important
+  }
+
+  nb-layout-header {
+    position: fixed;
+    z-index: 10;
+  }
+
+  nb-layout-header nav {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .nb-theme-corporate nb-sidebar .scrollable{
+    padding: 0;
+  }
+}

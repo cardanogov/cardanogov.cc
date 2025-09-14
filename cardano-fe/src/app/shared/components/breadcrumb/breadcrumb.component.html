@@ -1,0 +1,12 @@
+<nav class="breadcrumb-nav">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item" *ngFor="let item of items; let last = last">
+      <ng-container *ngIf="!last && item.path">
+        <a (click)="navigateToPath(item.path)" class="link-dark">{{ item.label }}</a>
+      </ng-container>
+      <ng-container *ngIf="last || !item.path">
+        {{ item.label }}
+      </ng-container>
+    </li>
+  </ol>
+</nav>

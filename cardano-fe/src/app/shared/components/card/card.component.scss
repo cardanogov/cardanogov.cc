@@ -1,0 +1,95 @@
+// Card
+.card {
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 12px;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  height: 100%;
+
+  .w-70 {
+    width: 70%;
+  }
+
+  .title {
+    font-size: 16px;
+    color: #000;
+  }
+
+  .row {
+    .value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #000;
+    }
+  }
+
+  .footer-content {
+    .change-badge {
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+      color: #808080;
+      margin-bottom: 8px;
+
+      .positive {
+        background-color: #47AB8A;
+        color: #28EEB1;
+        border-radius: 8px;
+        padding: 4px 8px;
+        margin-right: 4px;
+      }
+
+      .negative {
+        background-color: #FF0000;
+        color: #fee2e2;
+        border-radius: 8px;
+        padding: 4px 8px;
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .btn-custom {
+    margin-top: 30px;
+    background-color: #0086AD;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    width: 120px;
+    height: 30px;
+    font-size: 14px;
+    line-height: 16px;
+
+    &:hover {
+      background-color: #0295c2;
+    }
+  }
+
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    background-color: #D9D9D9;
+
+    nb-icon, img {
+      width: 30px;
+      height: 30px;
+      margin: auto;
+      color: #808080;
+
+      &:hover {
+        color: #808080;
+      }
+    }
+  }
+}

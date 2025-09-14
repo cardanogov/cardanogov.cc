@@ -1,0 +1,11 @@
+<div class="sidebar w-full" [class.compact]="isCompact">
+  <div class="logo-container">
+    <img src="assets/images/Logo-trans.png" alt="Cardano Logo" class="logo">
+    <h1 class="title" [class.hidden]="isCompact">CardanoGov.CC</h1>
+  </div>
+
+  <app-menu
+    [items]="menuItems"
+    [config]="menuConfig">
+  </app-menu>
+</div>

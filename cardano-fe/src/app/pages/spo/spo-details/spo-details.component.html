@@ -1,0 +1,350 @@
+<div class="container-fluid">
+  <ng-container *ngIf="isLoading">
+    <div class="row g-4">
+      <div class="col-12 col-md-4" *ngFor="let i of [1, 2, 3]">
+        <app-card-skeleton height="200px"></app-card-skeleton>
+      </div>
+    </div>
+    <div class="second-row row g-4 mt-4">
+      <div class="col-12">
+        <app-card-skeleton height="400px"></app-card-skeleton>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading && poolInfo">
+    <!-- Pool Info Card -->
+    <!-- <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="stat-card h-100">
+          <img src="assets/images/spo-avatar.jpg" alt="Pool Icon" />
+          <div class="stat-card-body">
+            <h6 class="stat-title">{{ poolInfo.ticker }}</h6>
+            <h6 class="stat-value">
+              <span #textToCopy>{{ poolInfo.pool_id_bech32 }}</span
+              ><nb-icon
+                (click)="copyToClipboard(textToCopy)"
+                icon="copy-outline"
+                pack="eva"
+                class="icon"
+              ></nb-icon>
+            </h6>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Voting Power Card -->
+      <!-- <div class="col-12 col-md-4">
+        <div class="stat-card h-100">
+          <div class="stat-card-body">
+            <h6 class="stat-title">Voting power</h6>
+          </div>
+          <div class="value-container">
+            <h6>₳ {{ votingPower | number }}</h6>
+            <div>
+              <span
+                [ngClass]="votingPowerChange >= 0 ? 'positive' : 'negative'"
+                class="change-badge"
+                >{{ votingPowerChange >= 0 ? "+" : ""
+                }}{{ votingPowerChange | number : "1.2-2" }}%</span
+              >
+              Since last epoch
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Status Card -->
+      <!-- <div class="col-12 col-md-4">
+        <div class="stat-card h-100">
+          <div class="stat-card-body">
+            <h6 class="stat-title">Status</h6>
+            <div
+              class="stat-status"
+              [ngClass]="{
+                active: poolInfo.status.status === 'Active',
+                inactive: poolInfo.status.status === 'Inactive'
+              }"
+            >
+              {{ poolInfo.status.status }}
+            </div>
+          </div>
+          <div class="value-container align-items-start">
+            <h5>
+              Registration:
+              {{
+                (poolInfo.status.registration > 0
+                  ? poolInfo.status.registration * 1000
+                  : null
+                ) | date : "dd/MM/yyyy" : "UTC"
+              }}
+            </h5>
+            <h5>
+              Last activity:
+              {{
+                (poolInfo.status.last_activity > 0
+                  ? poolInfo.status.last_activity * 1000
+                  : null
+                ) | date : "dd/MM/yyyy" : "UTC"
+              }}
+            </h5>
+          </div>
+        </div>
+      </div> -->
+    <!-- </div> -->
+
+    <!-- First Row -->
+    <div class="spo-card">
+      <div class="logo-container">
+        <img src="assets/icons/account-icon.svg" alt="Pool Icon" />
+      </div>
+      <div class="card-content">
+        <div class="header">
+          <div class="title mb-2">{{ poolInfo.information?.ticker || 'N/A' }}</div>
+          <div class="address-container">
+            <div class="address">{{ truncateMiddle(poolInfo.pool_id_bech32 || '') }}</div>
+            <nb-icon icon='copy-outline' pack='eva' (click)="copyToClipboard(poolInfo.pool_id_bech32 || '')"></nb-icon>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <div class="icon-container">
+              <img src="assets/icons/cc/group-icon.svg" alt="Members" />
+            </div>
+            <div class="value-container">
+              <div class="value">N/A</div>
+              <div class="label">
+                Contact
+              </div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="icon-container">
+              <img src="assets/icons/cc/vote-icon.svg" alt="Times voted" />
+            </div>
+            <div class="value-container">
+              <div class="value">{{ voteTotalItems }}</div>
+              <div class="label">
+                Times voted
+              </div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="icon-container">
+              <img src="assets/icons/cc/arm-icon.svg" alt="Voting power" />
+            </div>
+            <div class="value-container">
+              <div class="value">{{ formatValue(votingPower) }}</div>
+              <div class="label">Voting power</div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="icon-container">
+              <img src="assets/icons/cc/group-icon.svg" alt="Times voted" />
+            </div>
+            <div class="value-container">
+              <div class="value">{{ poolInfo.delegation?.length }}</div>
+              <div class="label">
+                Delegators
+              </div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="icon-container">
+              <img src="assets/icons/cc/target-icon.svg" alt="Trust" />
+            </div>
+            <div class="value-container">
+              <div class="value">{{ poolInfo.status?.status || '' }}</div>
+              <div class="label">Status</div>
+            </div>
+          </div>
+        </div>
+        <div class="tenure">
+          <div class="tenure-header">
+            <div class="label">Last activity</div>
+          </div>
+          <div class="tenure-header">
+            <div class="top-label">Registration: {{
+                (poolInfo.status && poolInfo.status.registration && poolInfo.status.registration > 0
+                ? poolInfo.status.registration * 1000
+                : null
+              ) | date : "dd/MM/yyyy" : "UTC"
+            }}</div>
+            <div class="end-date">Present</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress" [ngStyle]="{ width: lastActivityPercent + '%' }"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Row -->
+    <div class="second-row row g-4 mt-4">
+      <div class="col-12 col-md-6 col-lg-4">
+        <nb-card>
+          <nb-card-header>
+            <div class="header-container">
+              <div
+                class="header-main d-flex justify-content-between align-items-center"
+              >
+                <div class="d-flex align-items-center">
+                  <img
+                    src="assets/icons/logo.png"
+                    alt="Cardano Logo"
+                    class="logo"
+                  />
+                  <span>Introduce</span>
+                </div>
+                <img
+                  (click)="onIntroduceExpand()"
+                  class="cursor-pointer"
+                  src="../../../assets/icons/expand-simple.svg"
+                  alt="Expand Icon"
+                />
+              </div>
+            </div>
+          </nb-card-header>
+
+          <nb-card-body>
+            <div class="table-responsive">
+              <table nbTable class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>{{ poolInfo.information?.name }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ticker</td>
+                    <td>{{ poolInfo.information?.ticker }}</td>
+                  </tr>
+                  <tr>
+                    <td>Live Stake</td>
+                    <td>{{ formatValue(poolInfo.information?.live_stake || 0) }}₳</td>
+                  </tr>
+                  <tr>
+                    <td>Declared Pledge</td>
+                    <td>{{ formatValue(poolInfo.information?.deposit || 0) }}₳</td>
+                  </tr>
+                  <tr>
+                    <td>Margin fee</td>
+                    <td>{{ (poolInfo.information?.margin || 0) * 100 }}%</td>
+                  </tr>
+                  <tr>
+                    <td>Fixed fee</td>
+                    <td>{{ poolInfo.information?.fixed_cost || 0  }}₳</td>
+                  </tr>
+                  <tr>
+                    <td>Created</td>
+                    <td>
+                      {{
+                        (poolInfo.status && poolInfo.status.registration && poolInfo.status.registration > 0
+                          ? poolInfo.status.registration * 1000
+                          : null
+                        ) | date : "dd/MM/yyyy" : "UTC"
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Delegators</td>
+                    <td>{{ poolInfo.delegation?.length || 0 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Blocks Lifetime</td>
+                    <td>{{ poolInfo.information?.block_count || 0 }}</td>
+                  </tr>
+                  <tr>
+                    <td>Description</td>
+                    <td>{{ poolInfo.information?.description || '' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+
+      <div class="chart-container col-12 col-md-6 col-lg-8">
+        <div class="chart-wrapper">
+          <app-chart
+            title="Voting Power"
+            *ngIf="!isLoading"
+            (expand)="
+              openModal(
+                'votingPowerChart',
+                'Voting Power History'
+              )
+            "
+          >
+            <canvas #votingPowerChart></canvas>
+          </app-chart>
+          <app-chart-skeleton *ngIf="isLoading"></app-chart-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <!-- Third Row -->
+    <div class="third-row row g-4 mt-4">
+      <div class="col-12 col-md-6">
+        <app-table
+          title="Votes info"
+          [showSearch]="false"
+          [columns]="voteInfoColumns"
+          [data]="paginatedVoteData"
+          [totalItems]="voteTotalItems"
+          [currentPage]="voteCurrentPage"
+          [itemsPerPage]="itemsPerPage"
+          (pageChange)="onPageChange($event, 'vote')"
+          fixedHeight="482px"
+          [showExpanded]="true"
+          (expand)="onVotesInfoExpand()"
+        >
+        </app-table>
+
+        <div class="mt-4">
+          <app-table
+            title="Registration"
+            [showSearch]="false"
+            [columns]="registrationColumns"
+            [data]="paginatedRegistrationData"
+            [totalItems]="registrationTotalItems"
+            [currentPage]="registrationCurrentPage"
+            [itemsPerPage]="itemsPerPage"
+            (pageChange)="onPageChange($event, 'registration')"
+            fixedHeight="482px"
+            [showExpanded]="true"
+            (expand)="onRegistrationExpand()"
+          >
+          </app-table>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 delegation-table">
+        <ng-container *ngIf="isLoadingDelegation; else delegationTableContent">
+          <app-card-skeleton height="988px"></app-card-skeleton>
+        </ng-container>
+        <ng-template #delegationTableContent>
+          <app-table
+            title="Delegation"
+            [showSearch]="false"
+            [columns]="delegationColumns"
+            [data]="paginatedDelegationData"
+            [totalItems]="delegationTotalItems"
+            [currentPage]="delegationCurrentPage"
+            [itemsPerPage]="delegationItemsPerPage"
+            [subTitle]="'Delegators ' + delegationTotalItems"
+            (pageChange)="onPageChange($event, 'delegation')"
+            fixedHeight="988px"
+            [showExpanded]="true"
+            (expand)="onDelegationExpand()"
+            [amountSort]="delegationAmountSort"
+            [onAmountSort]="onAmountSort.bind(this)"
+          >
+          </app-table>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</div>

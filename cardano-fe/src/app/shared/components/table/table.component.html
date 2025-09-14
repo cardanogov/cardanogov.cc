@@ -1,0 +1,454 @@
+<nb-card [style.height]="fixedHeight">
+  <nb-card-header>
+    <div class="header-container">
+      <div
+        class="header-main d-flex justify-content-between align-items-center"
+      >
+        <div class="d-flex align-items-center justify-between w-full">
+          <div class="d-flex align-items-center">
+            <img src="assets/images/Logo - remove background-2.png" alt="Cardano Logo" class="logo" />
+            <span>{{ title }}</span>
+          </div>
+          <span>{{ subTitle }}</span>
+        </div>
+        <div
+          class="header-actions d-flex align-items-center gap-2"
+          *ngIf="showSearch"
+        >
+          <button
+            nbButton
+            ghost
+            class="filter-toggle d-md-none"
+            (click)="toggleFilters()"
+          >
+            <nb-icon icon="funnel-outline"></nb-icon>
+          </button>
+          <div class="filters d-none d-md-flex align-items-center gap-2">
+            <div class="radio-group">
+              <label *ngFor="let filter of filters" class="radio-label">
+                <input
+                  type="radio"
+                  name="filter"
+                  [value]="filter.value"
+                  [checked]="selectedFilter === filter.value"
+                  (change)="onFilterChange(filter.value)"
+                  [disabled]="loading"
+                />
+                {{ filter.label }}
+              </label>
+            </div>
+            <input
+              class="form-control"
+              nbInput
+              [(ngModel)]="searchTerm"
+              (keydown.enter)="onSearch($event)"
+              placeholder="Search..."
+              [disabled]="loading"
+            />
+          </div>
+        </div>
+        <div
+          class="header-actions d-flex align-items-center gap-2"
+          *ngIf="!showSearch && showText"
+        >
+          <span>{{ text }}</span>
+        </div>
+        <div
+          class="header-actions d-flex align-items-center gap-2 ml-4"
+          *ngIf="!showSearch && showExpanded"
+        >
+          <img
+            (click)="onExpand()"
+            class="cursor-pointer"
+            src="../../../assets/icons/expand-simple.svg"
+            alt="Expand Icon"
+          />
+        </div>
+      </div>
+
+      <div
+        class="mobile-filters d-md-none"
+        [class.show-filters]="showFilters"
+        *ngIf="showSearch"
+      >
+        <div class="filters d-flex flex-column gap-2 mt-3">
+          <div class="radio-group">
+            <label *ngFor="let filter of filters" class="radio-label">
+              <input
+                type="radio"
+                name="filter-mobile"
+                [value]="filter.value"
+                [checked]="selectedFilter === filter.value"
+                (change)="onFilterChange(filter.value)"
+                [disabled]="loading"
+              />
+              {{ filter.label }}
+            </label>
+          </div>
+          <input
+            class="form-control"
+            nbInput
+            [(ngModel)]="searchTerm"
+            (input)="onSearch($event)"
+            placeholder="Search..."
+            [disabled]="loading"
+          />
+        </div>
+      </div>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div class="table-responsive">
+      <table nbTable>
+        <thead>
+          <tr>
+            <th *ngFor="let column of columns">
+              <div class="th-content" [ngSwitch]="column.key">
+                <ng-container *ngSwitchCase="'amount'">
+                  <span (click)="onAmountSort && onAmountSort()" class="sortable-header cursor-pointer">
+                    {{ column.title }}
+                    <nb-icon *ngIf="amountSort === 'asc'" icon="arrow-upward-outline" pack="eva"></nb-icon>
+                    <nb-icon *ngIf="amountSort === 'desc'" icon="arrow-downward-outline" pack="eva"></nb-icon>
+                    <nb-icon *ngIf="amountSort === 'default' || !amountSort" icon="swap-vertical-outline" pack="eva"></nb-icon>
+                  </span>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ column.title }}
+                  <nb-icon
+                    *ngIf="column.hasAlert"
+                    icon="alert-circle-outline"
+                    pack="eva"
+                  ></nb-icon>
+                </ng-container>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td
+              [attr.colspan]="columns.length"
+              class="text-center"
+              style="width: 200px; height: 200px"
+            >
+              <div
+                class="loading-container"
+                style="width: 200px; height: 200px"
+              >
+                <div class="spinner"></div>
+                <p class="loading-text">Loading...</p>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let row of data" [hidden]="loading">
+            <td *ngFor="let column of columns">
+              <ng-container [ngSwitch]="column.key">
+                <ng-container *ngSwitchCase="'givenName'">
+                  <a
+                    [routerLink]="['/dreps', row.drep_id]"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                </ng-container>
+                <ng-container *ngSwitchCase="'meta_url'">
+                  <a
+                    class="text-decoration-none text-primary cursor-pointer"
+                    (click)="openUrl(row[column.key])"
+                    >{{ row[column.key] }}</a
+                  >
+                </ng-container>
+                <ng-container *ngSwitchCase="'amount'">
+                  <span>₳ {{ formatValue(row[column.key]) }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'percentage'">
+                  <span>{{ row[column.key] }}%</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'number'">
+                  <span>{{ row[column.key] }}</span>
+                </ng-container>
+                <ng-container *ngSwitchCase="'url'">
+                  <a
+                    class="text-decoration-none text-primary cursor-pointer"
+                    (click)="openUrl(row[column.key])"
+                    >{{ row[column.key] }}</a
+                  >
+                </ng-container>
+                <ng-container *ngSwitchCase="'date'">
+                  <nb-icon
+                    icon="clock-outline"
+                    pack="eva"
+                    class="icon"
+                  ></nb-icon>
+                  {{ row[column.key] }}
+                </ng-container>
+                <ng-container *ngSwitchCase="'type'">
+                  <div class="badge-container">
+                    <nb-badge [text]="row[column.key]" status="info"></nb-badge>
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'proposal_type'">
+                  <div class="badge-container">
+                    <nb-badge [text]="row[column.key]" status="info"></nb-badge>
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'block_time_m'">
+                  <div class="badge-container">
+                    <nb-icon
+                      icon="clock-outline"
+                      pack="eva"
+                      class="icon"
+                    ></nb-icon>
+                    {{
+                      row[column.key] * 1000
+                        | date : "HH:mm:ss dd/MM/yyyy" : "UTC"
+                    }}
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'time_ago'">
+                  <div class="badge-container">
+                    <nb-icon
+                      icon="clock-outline"
+                      pack="eva"
+                      class="icon"
+                    ></nb-icon>
+
+                    {{ row[column.key] | timeAgo }}
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'date_time_ago'">
+                  <div
+                    class="badge-container"
+                    [innerHTML]="row[column.key] | dateTimeAgo"
+                  >
+                    <nb-icon
+                      icon="clock-outline"
+                      pack="eva"
+                      class="icon"
+                    ></nb-icon>
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'vote'">
+                  <div class="badge-container">
+                    <nb-badge
+                      [text]="row[column.key]"
+                      [status]="getVoteStatus(row[column.key])"
+                    ></nb-badge>
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'status'">
+                  <div class="badge-container">
+                    <nb-badge
+                      [text]="row[column.key]"
+                      [status]="getStatusBadge(row[column.key])"
+                    ></nb-badge>
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'name'">
+                  <a
+                    *ngIf="row.voter_role === 'DRep'"
+                    [routerLink]="['/dreps', row.voter_id]"
+                    class="text-decoration-none text-primary"
+                    >{{ truncateName(row[column.key]) }}</a
+                  >
+                  <a
+                    *ngIf="row.voter_role === 'SPO'"
+                    [routerLink]="['/spo', row.voter_id]"
+                    class="text-decoration-none text-primary"
+                    >{{ truncateName(row[column.key]) }}</a
+                  >
+                  <a
+                    *ngIf="row.voter_role === 'ConstitutionalCommittee'"
+                    [routerLink]="['/cc']"
+                    class="text-decoration-none text-primary"
+                    >{{ truncateName(row[column.key]) }}</a
+                  >
+                  <a
+                    *ngIf="row.role === 'DRep'"
+                    [routerLink]="['/dreps', row.proposalId]"
+                    class="text-decoration-none text-primary"
+                    >{{ truncateName(row[column.key]) }}</a
+                  >
+                  <a
+                    *ngIf="row.role === 'SPO'"
+                    [routerLink]="['/spo', row.proposalId]"
+                    class="text-decoration-none text-primary"
+                    >{{ truncateName(row[column.key]) }}</a
+                  >
+                  <a
+                    *ngIf="row.role === 'ConstitutionalCommittee'"
+                    [routerLink]="['/cc']"
+                    class="text-decoration-none text-primary"
+                    >{{ truncateName(row[column.key]) }}</a
+                  >
+                </ng-container>
+                <ng-container *ngSwitchCase="'title'">
+                  <b
+                    >{{ row[column.key] }}</b
+                  >
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'text'">
+                  <span>{{ row[column.key] }}</span>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'id'">
+                  <span
+                    >{{
+                      row[column.key].slice(0, 6) +
+                        "..." +
+                        row[column.key].slice(-4)
+                    }}<nb-icon
+                      (click)="copyToClipboard(row[column.key])"
+                      icon="copy-outline"
+                      pack="eva"
+                      class="cursor-pointer"
+                    ></nb-icon
+                  ></span>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'stake_address'">
+                  <span
+                    >{{
+                      row[column.key].slice(0, 6) +
+                        "..." +
+                        row[column.key].slice(-4)
+                    }}<nb-icon
+                      (click)="copyToClipboard(row[column.key])"
+                      icon="copy-outline"
+                      pack="eva"
+                      class="cursor-pointer"
+                    ></nb-icon
+                  ></span>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'role'">
+                  <a
+                    *ngIf="row[column.key] === 'ConstitutionalCommittee'"
+                    [routerLink]="['/cc']"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                  <a
+                    *ngIf="row[column.key] === 'SPO'"
+                    [routerLink]="['/spo']"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                  <a
+                    *ngIf="row[column.key] === 'DRep'"
+                    [routerLink]="['/dreps']"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                  <span
+                    *ngIf="
+                      !['ConstitutionalCommittee', 'SPO', 'DRep'].includes(
+                        row[column.key]
+                      )
+                    "
+                    >{{ row[column.key] }}</span
+                  >
+                </ng-container>
+                <ng-container *ngSwitchCase="'voter_role'">
+                  <a
+                    *ngIf="row[column.key] === 'ConstitutionalCommittee'"
+                    [routerLink]="['/cc']"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                  <a
+                    *ngIf="row[column.key] === 'SPO'"
+                    [routerLink]="['/spo']"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                  <a
+                    *ngIf="row[column.key] === 'DRep'"
+                    [routerLink]="['/dreps']"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                  <span
+                    *ngIf="
+                      !['ConstitutionalCommittee', 'SPO', 'DRep'].includes(
+                        row[column.key]
+                      )
+                    "
+                    >{{ row[column.key] }}</span
+                  >
+                </ng-container>
+                <ng-container *ngSwitchCase="'governanceAction'">
+                  <a
+                    [routerLink]="['/activity', row.id]"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                </ng-container>
+                <ng-container *ngSwitchCase="'proposal_name'">
+                  <a
+                    [routerLink]="['/activity', row.proposal_id]"
+                    class="text-decoration-none text-primary"
+                    >{{ row[column.key] }}</a
+                  >
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ row[column.key] }}
+                </ng-container>
+              </ng-container>
+            </td>
+          </tr>
+          <tr *ngIf="data.length === 0 && !loading">
+            <td [attr.colspan]="columns.length" class="text-center py-4">
+              No data available
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </nb-card-body>
+
+  <nb-card-footer class="pagination" *ngIf="showPagination && totalItems > 0">
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <span class="page-info">{{ pageInfo }}</span>
+      <div class="pagination-controls d-flex align-items-center gap-3">
+        <button
+          nbButton
+          ghost
+          class="nav-button"
+          [disabled]="!canGoBack"
+          (click)="onFirstPage()"
+        >
+          <nb-icon icon="skip-back-outline" pack="eva"></nb-icon>
+        </button>
+        <button
+          nbButton
+          ghost
+          class="nav-button"
+          [disabled]="!canGoBack"
+          (click)="onPreviousPage()"
+        >
+          <nb-icon icon="arrow-ios-back-outline" pack="eva"></nb-icon>
+        </button>
+        <button
+          nbButton
+          ghost
+          class="nav-button"
+          [disabled]="!canGoForward"
+          (click)="onNextPage()"
+        >
+          <nb-icon icon="arrow-ios-forward-outline" pack="eva"></nb-icon>
+        </button>
+        <button
+          nbButton
+          ghost
+          class="nav-button"
+          [disabled]="!canGoForward"
+          (click)="onLastPage()"
+        >
+          <nb-icon icon="skip-forward-outline" pack="eva"></nb-icon>
+        </button>
+      </div>
+    </div>
+  </nb-card-footer>
+</nb-card>

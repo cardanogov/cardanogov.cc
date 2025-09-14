@@ -1,0 +1,22 @@
+<div class="container-fluid p-4">
+	<div class="d-flex justify-content-end">
+		<button class="close-btn" (click)="close()">
+			<nb-icon icon="close"></nb-icon>
+		</button>
+	</div>
+	<h2 class="text-center">{{ data.title }}</h2>
+	<app-table
+		title="{{ data.title }}"
+		[showPagination]="true"
+		[showSearch]="false"
+		[columns]="data.columns"
+		[data]="pagedData"
+		[subTitle]="data.text ? data.text : undefined"
+		[currentPage]="currentPage"
+		[itemsPerPage]="itemsPerPage"
+		[totalItems]="totalItems"
+		(pageChange)="onPageChange($event)"
+		[amountSort]="amountSort"
+		[onAmountSort]="onAmountSort"
+	></app-table>
+</div>

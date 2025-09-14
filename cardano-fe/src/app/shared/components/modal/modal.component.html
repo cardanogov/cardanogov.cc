@@ -1,0 +1,11 @@
+<div class="chart-modal">
+  <div class="modal-header">
+    <h2>{{ data.title }}</h2>
+    <button class="close-btn" (click)="close()">
+      <nb-icon icon="close"></nb-icon>
+    </button>
+  </div>
+  <div class="chart-container">
+    <canvas #expandedChart></canvas>
+  </div>
+</div>
